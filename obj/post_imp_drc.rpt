@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Fri Nov 15 19:12:38 2024
-| Host         : eecs-digital-42 running 64-bit Ubuntu 24.04.1 LTS
+| Date         : Sat Nov 16 15:39:28 2024
+| Host         : eecs-digital-35 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_drc -file obj/post_imp_drc.rpt
 | Design       : top_level
 | Device       : xc7s50csga324-1
@@ -35,17 +35,17 @@ Table of Contents
 -----------------
 DPIP-1#1 Warning
 Input pipelining  
-DSP letter_sprite/image_addr input letter_sprite/image_addr/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP display/letter_sprite/image_addr input display/letter_sprite/image_addr/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#2 Warning
 Input pipelining  
-DSP letter_sprite/image_addr1 input letter_sprite/image_addr1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP display/letter_sprite/image_addr1 input display/letter_sprite/image_addr1/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 DPIP-1#3 Warning
 Input pipelining  
-DSP x_in0 input x_in0/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+DSP display/x_in0 input display/x_in0/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
 Related violations: <none>
 
 

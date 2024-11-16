@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Fri Nov 15 19:12:36 2024
-| Host         : eecs-digital-42 running 64-bit Ubuntu 24.04.1 LTS
+| Date         : Sat Nov 16 15:39:27 2024
+| Host         : eecs-digital-35 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_timing -file obj/post_route_timing.rpt
 | Design       : top_level
 | Device       : 7s50-csga324
@@ -12,112 +12,124 @@ Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanc
 
 Timing Report
 
-Slack (VIOLATED) :        -3.332ns  (required time - arrival time)
-  Source:                 y_in0/CLK
-                            (rising edge-triggered cell DSP48E1 clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
-  Destination:            letter_sprite/brom1/BRAM_reg_0_6/ADDRARDADDR[13]
+Slack (VIOLATED) :        -21.611ns  (required time - arrival time)
+  Source:                 display/text_reg[86][3]/C
+                            (rising edge-triggered cell FDSE clocked by clk_100_cw_fast  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            display/letter_sprite/brom1/BRAM_reg_0_3/ADDRARDADDR[15]
                             (rising edge-triggered cell RAMB36E1 clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
   Path Group:             clk_pixel_cw_hdmi
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            13.468ns  (clk_pixel_cw_hdmi rise@13.468ns - clk_pixel_cw_hdmi rise@0.000ns)
-  Data Path Delay:        15.767ns  (logic 11.389ns (72.235%)  route 4.378ns (27.765%))
-  Logic Levels:           13  (CARRY4=8 DSP48E1=1 LUT2=1 LUT3=2 LUT6=1)
-  Clock Path Skew:        -0.075ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    -2.042ns = ( 11.426 - 13.468 ) 
-    Source Clock Delay      (SCD):    -2.393ns
-    Clock Pessimism Removal (CPR):    -0.427ns
-  Clock Uncertainty:      0.210ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+  Requirement:            0.034ns  (clk_pixel_cw_hdmi rise@1670.034ns - clk_100_cw_fast rise@1670.000ns)
+  Data Path Delay:        20.374ns  (logic 11.043ns (54.201%)  route 9.331ns (45.799%))
+  Logic Levels:           21  (CARRY4=10 DSP48E1=1 LUT2=2 LUT4=1 LUT6=4 MUXF7=2 MUXF8=1)
+  Clock Path Skew:        -0.061ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -2.040ns = ( 1667.994 - 1670.034 ) 
+    Source Clock Delay      (SCD):    -2.486ns = ( 1667.514 - 1670.000 ) 
+    Clock Pessimism Removal (CPR):    -0.507ns
+  Clock Uncertainty:      0.513ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
-    Discrete Jitter          (DJ):    0.414ns
-    Phase Error              (PE):    0.000ns
+    Discrete Jitter          (DJ):    0.343ns
+    Phase Error              (PE):    0.338ns
 
     Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
   -------------------------------------------------------------------    -------------------
-                         (clock clk_pixel_cw_hdmi rise edge)
-                                                      0.000     0.000 r  
-    N15                                               0.000     0.000 r  clk_100mhz (IN)
-                         net (fo=0)                   0.000     0.000    wizard_migcam/clk_100mhz
-    N15                  IBUF (Prop_ibuf_I_O)         1.440     1.440 r  wizard_migcam/clkin1_ibufg/O
-                         net (fo=1, routed)           1.253     2.693    wizard_migcam/clk_in1_cw_fast
+                         (clock clk_100_cw_fast rise edge)
+                                                   1670.000  1670.000 r  
+    N15                                               0.000  1670.000 r  clk_100mhz (IN)
+                         net (fo=0)                   0.000  1670.000    wizard_migcam/clk_100mhz
+    N15                  IBUF (Prop_ibuf_I_O)         1.440  1671.440 r  wizard_migcam/clkin1_ibufg/O
+                         net (fo=1, routed)           1.253  1672.693    wizard_migcam/clk_in1_cw_fast
     PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                     -8.486    -5.792 r  wizard_migcam/plle2_adv_inst/CLKOUT0
-                         net (fo=1, routed)           1.660    -4.132    wizard_migcam/clk_100_cw_fast
-    BUFGCTRL_X0Y4        BUFG (Prop_bufg_I_O)         0.096    -4.036 r  wizard_migcam/clkout1_buf/O
-                         net (fo=1, routed)           1.575    -2.461    wizard_hdmi/clk_100
-    MMCME2_ADV_X1Y0      MMCME2_ADV (Prop_mmcme2_adv_CLKIN1_CLKOUT0)
-                                                     -3.333    -5.793 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
-                         net (fo=1, routed)           1.661    -4.132    wizard_hdmi/clk_pixel_cw_hdmi
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096    -4.036 r  wizard_hdmi/clkout1_buf/O
-                         net (fo=251, routed)         1.643    -2.393    clk_pixel
-    DSP48_X1Y9           DSP48E1                                      r  y_in0/CLK
+                                                     -8.486  1664.208 r  wizard_migcam/plle2_adv_inst/CLKOUT0
+                         net (fo=1, routed)           1.660  1665.868    wizard_migcam/clk_100_cw_fast
+    BUFGCTRL_X0Y2        BUFG (Prop_bufg_I_O)         0.096  1665.964 r  wizard_migcam/clkout1_buf/O
+                         net (fo=2608, routed)        1.550  1667.514    display/clk_100
+    SLICE_X49Y25         FDSE                                         r  display/text_reg[86][3]/C
   -------------------------------------------------------------------    -------------------
-    DSP48_X1Y9           DSP48E1 (Prop_dsp48e1_CLK_P[4])
-                                                      4.009     1.616 f  y_in0/P[4]
-                         net (fo=13, routed)          1.051     2.666    letter_sprite/P[4]
-    SLICE_X55Y20         LUT6 (Prop_lut6_I0_O)        0.124     2.790 r  letter_sprite/i___8_carry__0_i_10/O
-                         net (fo=5, routed)           0.460     3.251    letter_sprite/i___8_carry__0_i_10_n_0
-    SLICE_X57Y21         LUT3 (Prop_lut3_I1_O)        0.124     3.375 r  letter_sprite/i___8_carry__0_i_3/O
-                         net (fo=1, routed)           0.000     3.375    letter_sprite/i___8_carry__0_i_3_n_0
-    SLICE_X57Y21         CARRY4 (Prop_carry4_S[2]_CO[3])
-                                                      0.398     3.773 r  letter_sprite/image_addr1_inferred__0/i___8_carry__0/CO[3]
-                         net (fo=1, routed)           0.000     3.773    letter_sprite/image_addr1_inferred__0/i___8_carry__0_n_0
-    SLICE_X57Y22         CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.114     3.887 r  letter_sprite/image_addr1_inferred__0/i___8_carry__1/CO[3]
-                         net (fo=1, routed)           0.000     3.887    letter_sprite/image_addr1_inferred__0/i___8_carry__1_n_0
-    SLICE_X57Y23         CARRY4 (Prop_carry4_CI_O[3])
-                                                      0.313     4.200 r  letter_sprite/image_addr1_inferred__0/i___8_carry__2/O[3]
-                         net (fo=1, routed)           0.529     4.728    letter_sprite/A[15]
-    DSP48_X1Y8           DSP48E1 (Prop_dsp48e1_A[15]_P[1])
-                                                      4.023     8.751 r  letter_sprite/image_addr/P[1]
-                         net (fo=1, routed)           0.503     9.254    letter_sprite/image_addr_n_104
-    SLICE_X53Y20         LUT2 (Prop_lut2_I1_O)        0.124     9.378 r  letter_sprite/i___9_carry_i_8/O
-                         net (fo=1, routed)           0.000     9.378    letter_sprite/i___9_carry_i_8_n_0
-    SLICE_X53Y20         CARRY4 (Prop_carry4_S[1]_CO[3])
-                                                      0.550     9.928 r  letter_sprite/i___9_carry_i_1/CO[3]
-                         net (fo=1, routed)           0.000     9.928    letter_sprite/i___9_carry_i_1_n_0
-    SLICE_X53Y21         CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.334    10.262 r  letter_sprite/i___9_carry__0_i_1/O[1]
-                         net (fo=2, routed)           0.371    10.633    letter_sprite/PCOUT[5]
-    SLICE_X52Y21         LUT3 (Prop_lut3_I2_O)        0.303    10.936 r  letter_sprite/i___9_carry__0_i_4/O
-                         net (fo=1, routed)           0.000    10.936    letter_sprite/i___9_carry__0_i_4_n_0
-    SLICE_X52Y21         CARRY4 (Prop_carry4_S[1]_CO[3])
-                                                      0.533    11.469 r  letter_sprite/image_addr_inferred__0/i___9_carry__0/CO[3]
-                         net (fo=1, routed)           0.000    11.469    letter_sprite/image_addr_inferred__0/i___9_carry__0_n_0
-    SLICE_X52Y22         CARRY4 (Prop_carry4_CI_CO[3])
-                                                      0.117    11.586 r  letter_sprite/image_addr_inferred__0/i___9_carry__1/CO[3]
-                         net (fo=1, routed)           0.000    11.586    letter_sprite/image_addr_inferred__0/i___9_carry__1_n_0
-    SLICE_X52Y23         CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.323    11.909 r  letter_sprite/image_addr_inferred__0/i___9_carry__2/O[1]
-                         net (fo=16, routed)          1.465    13.374    letter_sprite/brom1/ADDRARDADDR[13]
-    RAMB36_X1Y0          RAMB36E1                                     r  letter_sprite/brom1/BRAM_reg_0_6/ADDRARDADDR[13]
+    SLICE_X49Y25         FDSE (Prop_fdse_C_Q)         0.456  1667.970 r  display/text_reg[86][3]/Q
+                         net (fo=1, routed)           1.080  1669.051    display/text_reg_n_0_[86][3]
+    SLICE_X50Y28         LUT6 (Prop_lut6_I1_O)        0.124  1669.175 r  display/image_addr1_i_925/O
+                         net (fo=1, routed)           0.000  1669.175    display/image_addr1_i_925_n_0
+    SLICE_X50Y28         MUXF7 (Prop_muxf7_I1_O)      0.247  1669.422 r  display/image_addr1_i_416/O
+                         net (fo=1, routed)           0.000  1669.422    display/image_addr1_i_416_n_0
+    SLICE_X50Y28         MUXF8 (Prop_muxf8_I0_O)      0.098  1669.520 r  display/image_addr1_i_162/O
+                         net (fo=1, routed)           1.242  1670.761    display/image_addr1_i_162_n_0
+    SLICE_X44Y14         LUT6 (Prop_lut6_I3_O)        0.319  1671.080 r  display/image_addr1_i_51/O
+                         net (fo=1, routed)           0.000  1671.080    display/image_addr1_i_51_n_0
+    SLICE_X44Y14         MUXF7 (Prop_muxf7_I1_O)      0.245  1671.325 r  display/image_addr1_i_19/O
+                         net (fo=2, routed)           0.830  1672.155    display/image_addr1_i_19_n_0
+    SLICE_X41Y11         LUT6 (Prop_lut6_I5_O)        0.298  1672.453 r  display/image_addr1_i_5/O
+                         net (fo=23, routed)          1.021  1673.474    display/letter_sprite/text[3]
+    SLICE_X46Y10         LUT4 (Prop_lut4_I1_O)        0.124  1673.598 r  display/letter_sprite/image_addr_i_48/O
+                         net (fo=1, routed)           0.000  1673.598    display/letter_sprite/image_addr_i_48_n_0
+    SLICE_X46Y10         CARRY4 (Prop_carry4_S[0]_O[3])
+                                                      0.608  1674.206 r  display/letter_sprite/image_addr_i_36/O[3]
+                         net (fo=1, routed)           0.577  1674.783    display/letter_sprite/image_addr_i_36_n_4
+    SLICE_X47Y11         LUT2 (Prop_lut2_I1_O)        0.307  1675.090 r  display/letter_sprite/image_addr_i_28/O
+                         net (fo=1, routed)           0.000  1675.090    display/letter_sprite/image_addr_i_28_n_0
+    SLICE_X47Y11         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550  1675.640 r  display/letter_sprite/image_addr_i_14/CO[3]
+                         net (fo=1, routed)           0.000  1675.640    display/letter_sprite/image_addr_i_14_n_0
+    SLICE_X47Y12         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334  1675.974 r  display/letter_sprite/image_addr_i_9/O[1]
+                         net (fo=2, routed)           0.764  1676.738    display/letter_sprite/image_addr_i_9_n_6
+    SLICE_X50Y12         CARRY4 (Prop_carry4_DI[1]_CO[3])
+                                                      0.699  1677.437 r  display/letter_sprite/image_addr_i_2/CO[3]
+                         net (fo=1, routed)           0.000  1677.437    display/letter_sprite/image_addr_i_2_n_0
+    SLICE_X50Y13         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.323  1677.760 r  display/letter_sprite/image_addr_i_1/O[1]
+                         net (fo=1, routed)           0.597  1678.357    display/letter_sprite/A[13]
+    DSP48_X1Y5           DSP48E1 (Prop_dsp48e1_A[13]_P[1])
+                                                      4.023  1682.380 r  display/letter_sprite/image_addr/P[1]
+                         net (fo=1, routed)           0.836  1683.216    display/letter_sprite/brom1/P[1]
+    SLICE_X49Y15         LUT2 (Prop_lut2_I1_O)        0.124  1683.340 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_38/O
+                         net (fo=1, routed)           0.000  1683.340    display/letter_sprite/brom1/BRAM_reg_0_0_i_38_n_0
+    SLICE_X49Y15         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550  1683.890 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_20/CO[3]
+                         net (fo=1, routed)           0.000  1683.890    display/letter_sprite/brom1/BRAM_reg_0_0_i_20_n_0
+    SLICE_X49Y16         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114  1684.004 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_15/CO[3]
+                         net (fo=1, routed)           0.000  1684.004    display/letter_sprite/brom1/BRAM_reg_0_0_i_15_n_0
+    SLICE_X49Y17         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334  1684.338 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_10/O[1]
+                         net (fo=2, routed)           0.666  1685.005    display/letter_sprite/brom1/PCOUT[9]
+    SLICE_X44Y18         LUT6 (Prop_lut6_I5_O)        0.303  1685.307 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_13/O
+                         net (fo=1, routed)           0.000  1685.307    display/letter_sprite/brom1/BRAM_reg_0_0_i_13_n_0
+    SLICE_X44Y18         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550  1685.858 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_2/CO[3]
+                         net (fo=1, routed)           0.000  1685.858    display/letter_sprite/brom1/BRAM_reg_0_0_i_2_n_0
+    SLICE_X44Y19         CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.313  1686.171 r  display/letter_sprite/brom1/BRAM_reg_0_0_i_1/O[3]
+                         net (fo=16, routed)          1.718  1687.889    display/letter_sprite/brom1/BRAM_reg_0_0_i_1_n_4
+    RAMB36_X2Y0          RAMB36E1                                     r  display/letter_sprite/brom1/BRAM_reg_0_3/ADDRARDADDR[15]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pixel_cw_hdmi rise edge)
-                                                     13.468    13.468 r  
-    N15                                               0.000    13.468 r  clk_100mhz (IN)
-                         net (fo=0)                   0.000    13.468    wizard_migcam/clk_100mhz
-    N15                  IBUF (Prop_ibuf_I_O)         1.370    14.838 r  wizard_migcam/clkin1_ibufg/O
-                         net (fo=1, routed)           1.181    16.019    wizard_migcam/clk_in1_cw_fast
+                                                   1670.034  1670.034 r  
+    N15                                               0.000  1670.034 r  clk_100mhz (IN)
+                         net (fo=0)                   0.000  1670.034    wizard_migcam/clk_100mhz
+    N15                  IBUF (Prop_ibuf_I_O)         1.370  1671.404 r  wizard_migcam/clkin1_ibufg/O
+                         net (fo=1, routed)           1.181  1672.585    wizard_migcam/clk_in1_cw_fast
     PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)
-                                                     -7.753     8.266 r  wizard_migcam/plle2_adv_inst/CLKOUT0
-                         net (fo=1, routed)           1.582     9.848    wizard_migcam/clk_100_cw_fast
-    BUFGCTRL_X0Y4        BUFG (Prop_bufg_I_O)         0.091     9.939 r  wizard_migcam/clkout1_buf/O
-                         net (fo=1, routed)           1.457    11.396    wizard_hdmi/clk_100
+                                                     -7.753  1664.831 r  wizard_migcam/plle2_adv_inst/CLKOUT0
+                         net (fo=1, routed)           1.582  1666.413    wizard_migcam/clk_100_cw_fast
+    BUFGCTRL_X0Y2        BUFG (Prop_bufg_I_O)         0.091  1666.504 r  wizard_migcam/clkout1_buf/O
+                         net (fo=2608, routed)        1.457  1667.962    wizard_hdmi/clk_100
     MMCME2_ADV_X1Y0      MMCME2_ADV (Prop_mmcme2_adv_CLKIN1_CLKOUT0)
-                                                     -3.129     8.267 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
-                         net (fo=1, routed)           1.581     9.848    wizard_hdmi/clk_pixel_cw_hdmi
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091     9.939 r  wizard_hdmi/clkout1_buf/O
-                         net (fo=251, routed)         1.488    11.426    letter_sprite/brom1/clk_pixel
-    RAMB36_X1Y0          RAMB36E1                                     r  letter_sprite/brom1/BRAM_reg_0_6/CLKARDCLK
-                         clock pessimism             -0.427    11.000    
-                         clock uncertainty           -0.210    10.790    
-    RAMB36_X1Y0          RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ADDRARDADDR[13])
-                                                     -0.748    10.042    letter_sprite/brom1/BRAM_reg_0_6
+                                                     -3.129  1664.832 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
+                         net (fo=1, routed)           1.581  1666.413    wizard_hdmi/clk_pixel_cw_hdmi
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091  1666.504 r  wizard_hdmi/clkout1_buf/O
+                         net (fo=254, routed)         1.490  1667.994    display/letter_sprite/brom1/clk_pixel
+    RAMB36_X2Y0          RAMB36E1                                     r  display/letter_sprite/brom1/BRAM_reg_0_3/CLKARDCLK
+                         clock pessimism             -0.507  1667.487    
+                         clock uncertainty           -0.513  1666.974    
+    RAMB36_X2Y0          RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ADDRARDADDR[15])
+                                                     -0.697  1666.277    display/letter_sprite/brom1/BRAM_reg_0_3
   -------------------------------------------------------------------
-                         required time                         10.042    
-                         arrival time                         -13.374    
+                         required time                       1666.277    
+                         arrival time                       -1687.889    
   -------------------------------------------------------------------
-                         slack                                 -3.332    
+                         slack                                -21.611    
 
 
 

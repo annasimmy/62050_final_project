@@ -34,28 +34,58 @@ module top_level
   assign ss1_an = 0;
   assign ss0_c = 0;
   assign ss1_c = 0;
+  
+  // Clock and Reset Signals
+  logic          clk_camera;
+  logic          clk_pixel;
+  logic          clk_5x;
+  logic          clk_xc;
 
+  logic          clk_100_passthrough;
 
+  // clocking wizards to generate the clock speeds we need for our different domains
+  // clk_camera: 200MHz, fast enough to comfortably sample the cameera's PCLK (50MHz)
+  cw_hdmi_clk_wiz wizard_hdmi
+    (.sysclk(clk_100_passthrough),
+    .clk_pixel(clk_pixel),
+    .clk_tmds(clk_5x),
+    .reset(0));
+
+  cw_fast_clk_wiz wizard_migcam
+    (.clk_in1(clk_100mhz),
+    .clk_camera(clk_camera),
+    .clk_xc(clk_xc),
+    .clk_100(clk_100_passthrough),
+    .reset(0));
 
   logic tmds_signal [2:0];
-  logic prev_btn;
+  
+  
+  logic debounced_output;
+ 
+  debouncer btn1_db(.clk_in(clk_100_passthrough),
+                    .rst_in(btn[0]),
+                    .dirty_in(btn[1]),
+                    .clean_out(debounced_output));
 
-  always_ff @(posedge clk_100mhz) begin
-    prev_btn <= btn[1];
-    tmds_signal[0] <= 0;
-    tmds_signal[1] <= 0;
-    tmds_signal[2] <= 0;
+  logic prev_output;
+
+  always_ff @(posedge clk_100_passthrough) begin
+    prev_output <= debounced_output;
   end
 
-  // text_display display
-  //   (.clk_in(clk_100mhz),
-  //    .sys_rst_pixel(btn[0]),
-  //    .data_valid_in(btn[1] && !prev_btn),
-  //    .data_in(sw[4:0]),
-  //    .tmds_red(tmds_signal[2]),
-  //    .tmds_green(tmds_signal[1]),
-  //    .tmds_blue(tmds_signal[0]),
-  //   )
+
+  text_display display
+    (.clk_in(clk_100_passthrough),
+     .clk_pixel(clk_pixel),
+     .clk_5x(clk_5x),
+     .sys_rst_pixel(btn[0]),
+     .data_valid_in(debounced_output && !prev_output),
+     .data_in(sw[4:0]),
+     .tmds_red_out(tmds_signal[2]),
+     .tmds_green_out(tmds_signal[1]),
+     .tmds_blue_out(tmds_signal[0])
+    );
 
   //output buffers generating differential signals:
   //three for the r,g,b signals and one that is at the pixel clock rate

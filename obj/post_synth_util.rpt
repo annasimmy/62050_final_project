@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Fri Nov 15 19:11:21 2024
-| Host         : eecs-digital-42 running 64-bit Ubuntu 24.04.1 LTS
+| Date         : Sat Nov 16 15:38:30 2024
+| Host         : eecs-digital-35 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_utilization -file obj/post_synth_util.rpt -hierarchical -hierarchical_depth 4
 | Design       : top_level
 | Device       : xc7s50csga324-1
@@ -19,24 +19,27 @@ Table of Contents
 1. Utilization by Hierarchy
 ---------------------------
 
-+---------------------+---------------------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
-|       Instance      |                       Module                      | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
-+---------------------+---------------------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
-| top_level           |                                             (top) |        372 |        345 |       0 |   27 | 188 |     16 |      1 |          4 |
-|   (top_level)       |                                             (top) |         64 |         38 |       0 |   26 | 110 |      0 |      0 |          2 |
-|   blue_ser          |                                   tmds_serializer |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
-|   green_ser         |                                 tmds_serializer_0 |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
-|   letter_sprite     |                                      image_sprite |        253 |        252 |       0 |    1 |   1 |     16 |      1 |          2 |
-|     (letter_sprite) |                                      image_sprite |        104 |        103 |       0 |    1 |   1 |      0 |      0 |          2 |
-|     brom1           |                 xilinx_single_port_ram_read_first |          5 |          5 |       0 |    0 |   0 |     16 |      0 |          0 |
-|     brrom2          | xilinx_single_port_ram_read_first__parameterized0 |        144 |        144 |       0 |    0 |   0 |      0 |      1 |          0 |
-|   red_ser           |                                 tmds_serializer_1 |          1 |          1 |       0 |    0 |   1 |      0 |      0 |          0 |
-|   tmds_blue         |                                      tmds_encoder |          1 |          1 |       0 |    0 |  14 |      0 |      0 |          0 |
-|   tmds_green        |                                    tmds_encoder_2 |          1 |          1 |       0 |    0 |  14 |      0 |      0 |          0 |
-|   tmds_red          |                                    tmds_encoder_3 |          2 |          2 |       0 |    0 |  14 |      0 |      0 |          0 |
-|   vsg               |                                     video_sig_gen |         50 |         50 |       0 |    0 |  34 |      0 |      0 |          0 |
-|   wizard_hdmi       |                                   cw_hdmi_clk_wiz |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
-|   wizard_migcam     |                                   cw_fast_clk_wiz |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
-+---------------------+---------------------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
++-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+|        Instance       |                       Module                      | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+| top_level             |                                             (top) |       1661 |       1634 |       0 |   27 | 2807 |     16 |      1 |          4 |
+|   (top_level)         |                                             (top) |          0 |          0 |       0 |    0 |    1 |      0 |      0 |          0 |
+|   btn1_db             |                                         debouncer |         26 |         26 |       0 |    0 |   21 |      0 |      0 |          0 |
+|   display             |                                      text_display |       1635 |       1608 |       0 |   27 | 2785 |     16 |      1 |          4 |
+|     (display)         |                                      text_display |       1300 |       1274 |       0 |   26 | 2707 |      0 |      0 |          2 |
+|     blue_ser          |                                   tmds_serializer |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     green_ser         |                                 tmds_serializer_0 |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
+|     letter_sprite     |                                      image_sprite |        255 |        254 |       0 |    1 |    1 |     16 |      1 |          2 |
+|       (letter_sprite) |                                      image_sprite |         73 |         72 |       0 |    1 |    1 |      0 |      0 |          2 |
+|       brom1           |                 xilinx_single_port_ram_read_first |         31 |         31 |       0 |    0 |    0 |     16 |      0 |          0 |
+|       brrom2          | xilinx_single_port_ram_read_first__parameterized0 |        151 |        151 |       0 |    0 |    0 |      0 |      1 |          0 |
+|     red_ser           |                                 tmds_serializer_1 |          1 |          1 |       0 |    0 |    1 |      0 |      0 |          0 |
+|     tmds_blue         |                                      tmds_encoder |          9 |          9 |       0 |    0 |   14 |      0 |      0 |          0 |
+|     tmds_green        |                                    tmds_encoder_2 |          8 |          8 |       0 |    0 |   14 |      0 |      0 |          0 |
+|     tmds_red          |                                    tmds_encoder_3 |         10 |         10 |       0 |    0 |   14 |      0 |      0 |          0 |
+|     vsg               |                                     video_sig_gen |         52 |         52 |       0 |    0 |   34 |      0 |      0 |          0 |
+|   wizard_hdmi         |                                   cw_hdmi_clk_wiz |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
+|   wizard_migcam       |                                   cw_fast_clk_wiz |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
++-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
 
 

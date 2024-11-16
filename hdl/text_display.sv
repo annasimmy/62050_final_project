@@ -1,39 +1,19 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module image_sprite (
+module text_display (
     input wire clk_in,
+    input wire clk_pixel,
+    input wire clk_5x,
     input wire sys_rst_pixel,
     input wire data_valid_in,
     input wire [4:0] data_in,
-    output logic tmds_red,
-    output logic tmds_green,
-    output logic tmds_blue
+    output logic tmds_red_out,
+    output logic tmds_green_out,
+    output logic tmds_blue_out
     );
 
 
-    // Clock and Reset Signals
-    logic          clk_camera;
-    logic          clk_pixel;
-    logic          clk_5x;
-    logic          clk_xc;
-
-    logic          clk_100_passthrough;
-
-    // clocking wizards to generate the clock speeds we need for our different domains
-    // clk_camera: 200MHz, fast enough to comfortably sample the cameera's PCLK (50MHz)
-    cw_hdmi_clk_wiz wizard_hdmi
-        (.sysclk(clk_100_passthrough),
-        .clk_pixel(clk_pixel),
-        .clk_tmds(clk_5x),
-        .reset(0));
-
-    cw_fast_clk_wiz wizard_migcam
-        (.clk_in1(clk_in),
-        .clk_camera(clk_camera),
-        .clk_xc(clk_xc),
-        .clk_100(clk_100_passthrough),
-        .reset(0));
 
     logic [4:0] text [511:0];
     logic [8:0] counter;
@@ -46,16 +26,13 @@ module image_sprite (
             end
         end else if(data_valid_in) begin
             text[counter] <= data_in;
-            counter <= counter + 1;
+            if(counter == 511) begin
+                counter <= 0;
+            end else begin
+                counter <= counter + 1;
+            end
         end
     end
-  
-    evt_counter cntr
-        (.clk_in(clk_in),
-        .rst_in(sys_rst_pixel),
-        .evt_in(data_valid_in),
-        .count_out(counter)
-        )
 
     // video signal generator signals
     logic          hsync_hdmi;
@@ -116,8 +93,8 @@ module image_sprite (
                 hcount_left_pipe[i] <= hcount_left_pipe[i - 1];
                 hcount_pipe_2[i] <= hcount_pipe_2[i - 1];
             end
-            end
-            for (int i = 1; i <= 3; i = i+1)begin
+        end
+        for (int i = 1; i <= 3; i = i+1)begin
             if(vcount_pipe_2[i - 1] >= (360 >> i)) begin
                 vcount_up_pipe[i] <= vcount_up_pipe[i - 1] + (8 >> i);
                 vcount_pipe_2[i] <= vcount_pipe_2[i - 1] - (360 >> i);
@@ -136,7 +113,7 @@ module image_sprite (
     image_sprite #(
         .WIDTH(228),
         .HEIGHT(225))
-        letter_sprite (
+    letter_sprite (
         .pixel_clk_in(clk_pixel),
         .rst_in(sys_rst_pixel),
         .hcount_in(hcount_pipe[4]),  
@@ -163,9 +140,9 @@ module image_sprite (
         );
 
 
-   logic [9:0] tmds_10b [0:2];
+    logic [9:0] tmds_10b [0:2];
 
-   tmds_encoder tmds_red(
+    tmds_encoder tmds_red(
        .clk_in(clk_pixel),
        .rst_in(sys_rst_pixel),
        .data_in(red),
@@ -173,15 +150,15 @@ module image_sprite (
        .ve_in(active_draw_hdmi_pipe[8]),
        .tmds_out(tmds_10b[2]));
 
-   tmds_encoder tmds_green(
-         .clk_in(clk_pixel),
-         .rst_in(sys_rst_pixel),
-         .data_in(green),
-         .control_in(2'b0),
-         .ve_in(active_draw_hdmi_pipe[8]),
-         .tmds_out(tmds_10b[1]));
+    tmds_encoder tmds_green(
+        .clk_in(clk_pixel),
+        .rst_in(sys_rst_pixel),
+        .data_in(green),
+        .control_in(2'b0),
+        .ve_in(active_draw_hdmi_pipe[8]),
+        .tmds_out(tmds_10b[1]));
 
-   tmds_encoder tmds_blue(
+    tmds_encoder tmds_blue(
         .clk_in(clk_pixel),
         .rst_in(sys_rst_pixel),
         .data_in(blue),
@@ -197,17 +174,17 @@ module image_sprite (
          .clk_5x_in(clk_5x),
          .rst_in(sys_rst_pixel),
          .tmds_in(tmds_10b[2]),
-         .tmds_out(tmds_red));
+         .tmds_out(tmds_red_out));
     tmds_serializer green_ser(
          .clk_pixel_in(clk_pixel),
          .clk_5x_in(clk_5x),
          .rst_in(sys_rst_pixel),
          .tmds_in(tmds_10b[1]),
-         .tmds_out(tmds_green));
+         .tmds_out(tmds_green_out));
     tmds_serializer blue_ser(
          .clk_pixel_in(clk_pixel),
          .clk_5x_in(clk_5x),
          .rst_in(sys_rst_pixel),
          .tmds_in(tmds_10b[0]),
-         .tmds_out(tmds_blue));
+         .tmds_out(tmds_blue_out));
 endmodule
