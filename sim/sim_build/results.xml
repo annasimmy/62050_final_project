@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1731711821" />
+    <testcase name="test_a" classname="test_top" file="C:\Users\kevin\6205_psets\62050_final_project\sim\test_top.py" lineno="13" time="0.02590465545654297" sim_time_ns="3020.001" ratio_time="116581.40001384237" />
+  </testsuite>
+</testsuites>
