@@ -72,6 +72,9 @@ module top_level
 
   always_ff @(posedge clk_100_passthrough) begin
     prev_output <= debounced_output;
+    // tmds_signal[0] <= !btn[0] && btn[1];
+    // tmds_signal[1] <= 0;
+    // tmds_signal[2] <= 0;
   end
 
 
