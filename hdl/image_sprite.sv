@@ -23,18 +23,23 @@ module image_sprite #(
   logic [3:0] letter_x_pos;
 
   always_comb begin
-    if(letter <= 6) begin
+    if(letter > 26) begin
+      letter_x_pos = 0;
       letter_y_pos = 0;
-    end else if(letter <= 12) begin
-      letter_y_pos = 1;
-    end else if(letter <= 18) begin
-      letter_y_pos = 2;
-    end else if(letter <= 24) begin
-      letter_y_pos = 3;
     end else begin
-      letter_y_pos = 4;
+      if(letter <= 6) begin
+        letter_y_pos = 0;
+      end else if(letter <= 12) begin
+        letter_y_pos = 1;
+      end else if(letter <= 18) begin
+        letter_y_pos = 2;
+      end else if(letter <= 24) begin
+        letter_y_pos = 3;
+      end else begin
+        letter_y_pos = 4;
+      end
+      letter_x_pos = letter - 6 * letter_y_pos - 1 ;
     end
-    letter_x_pos = letter - 6 * letter_y_pos - 1 ;
   end
 
   // calculate rom address
@@ -103,7 +108,7 @@ module image_sprite #(
   );
 
   // Modify the module below to use your BRAMs!
-  assign red_out =    (letter == 0 || !in_sprite6) ? 255 : pixel_col[23:16];
-  assign green_out =  (letter == 0 || !in_sprite6) ? 255 : pixel_col[15:8];
-  assign blue_out =   (letter == 0 || !in_sprite6) ? 255 : pixel_col[7:0];
+  assign red_out =    (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[23:16];
+  assign green_out =  (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[15:8];
+  assign blue_out =   (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[7:0];
 endmodule

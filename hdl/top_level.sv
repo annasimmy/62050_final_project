@@ -5,14 +5,6 @@ module top_level
   (
    input wire          clk_100mhz,
    output logic [15:0] led,
-  //  // camera bus
-  //  input wire [7:0]    camera_d, // 8 parallel data wires
-  //  output logic        cam_xclk, // XC driving camera
-  //  input wire          cam_hsync, // camera hsync wire
-  //  input wire          cam_vsync, // camera vsync wire
-  //  input wire          cam_pclk, // camera pixel clock
-  //  inout wire          i2c_scl, // i2c inout clock
-  //  inout wire          i2c_sda, // i2c inout data
    input wire [15:0]   sw,
    input wire [3:0]    btn,
    output logic [2:0]  rgb0,
@@ -59,36 +51,60 @@ module top_level
     .reset(0));
 
   logic tmds_signal [2:0];
+  logic tmds_signal2 [2:0];
   
   
   logic debounced_output;
- 
   debouncer btn1_db(.clk_in(clk_100_passthrough),
                     .rst_in(btn[0]),
                     .dirty_in(btn[1]),
                     .clean_out(debounced_output));
+  logic debounced_output2;
+  debouncer btn2_db(.clk_in(clk_pixel),
+                    .rst_in(btn[0]),
+                    .dirty_in(btn[2]),
+                    .clean_out(debounced_output2));
 
   logic prev_output;
+  logic prev_output2;
 
   always_ff @(posedge clk_100_passthrough) begin
     prev_output <= debounced_output;
-    // tmds_signal[0] <= !btn[0] && btn[1];
-    // tmds_signal[1] <= 0;
-    // tmds_signal[2] <= 0;
+  end
+  always_ff @(posedge clk_pixel) begin
+    prev_output2 <= debounced_output2;
   end
 
 
-  text_display display
+  text_display display_text
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .clk_5x(clk_5x),
      .sys_rst_pixel(btn[0]),
      .data_valid_in(debounced_output && !prev_output),
      .data_in(sw[4:0]),
+     .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
      .tmds_red_out(tmds_signal[2]),
      .tmds_green_out(tmds_signal[1]),
      .tmds_blue_out(tmds_signal[0])
     );
+    
+  enigma_display display_enigma
+    (.clk_in(clk_100_passthrough),
+     .clk_pixel(clk_pixel),
+     .clk_5x(clk_5x),
+     .sys_rst_pixel(btn[0]),
+     .orig_letter_in(sw[4:0]),
+     .code_letter_in(sw[9:5]),
+     .tmds_red_out(tmds_signal2[2]),
+     .tmds_green_out(tmds_signal2[1]),
+     .tmds_blue_out(tmds_signal2[0])
+    );
+
+  // logic tmds_muxed [2:0];
+  // always_ff @(posedge clk_100_passthrough) begin
+  //   tmds_muxed <= sw[15] ? tmds_signal2 : tmds_signal;
+  // end
 
   //output buffers generating differential signals:
   //three for the r,g,b signals and one that is at the pixel clock rate
@@ -96,9 +112,9 @@ module top_level
   //during blanking and sync periods to synchronize their faster bit clocks off
   //of the slower pixel clock (so they can recover a clock of about 742.5 MHz from
   //the slower 74.25 MHz clock)
-  OBUFDS OBUFDS_blue (.I(tmds_signal[0]), .O(hdmi_tx_p[0]), .OB(hdmi_tx_n[0]));
-  OBUFDS OBUFDS_green(.I(tmds_signal[1]), .O(hdmi_tx_p[1]), .OB(hdmi_tx_n[1]));
-  OBUFDS OBUFDS_red  (.I(tmds_signal[2]), .O(hdmi_tx_p[2]), .OB(hdmi_tx_n[2]));
+  OBUFDS OBUFDS_blue (.I(tmds_signal2[0]), .O(hdmi_tx_p[0]), .OB(hdmi_tx_n[0]));
+  OBUFDS OBUFDS_green(.I(tmds_signal2[1]), .O(hdmi_tx_p[1]), .OB(hdmi_tx_n[1]));
+  OBUFDS OBUFDS_red  (.I(tmds_signal2[2]), .O(hdmi_tx_p[2]), .OB(hdmi_tx_n[2]));
   OBUFDS OBUFDS_clock(.I(clk_pixel), .O(hdmi_clk_p), .OB(hdmi_clk_n));
   assign led[15:0] = 0;
 
