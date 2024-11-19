@@ -23,23 +23,38 @@ module image_sprite #(
   logic [3:0] letter_x_pos;
 
   always_comb begin
-    if(letter < 6) begin
+    if(letter > 26) begin
+      letter_x_pos = 0;
       letter_y_pos = 0;
-    end else if(letter < 12) begin
-      letter_y_pos = 1;
-    end else if(letter < 18) begin
-      letter_y_pos = 2;
-    end else if(letter < 24) begin
-      letter_y_pos = 3;
     end else begin
-      letter_y_pos = 4;
+      if(letter <= 6) begin
+        letter_y_pos = 0;
+      end else if(letter <= 12) begin
+        letter_y_pos = 1;
+      end else if(letter <= 18) begin
+        letter_y_pos = 2;
+      end else if(letter <= 24) begin
+        letter_y_pos = 3;
+      end else begin
+        letter_y_pos = 4;
+      end
+      letter_x_pos = letter - 6 * letter_y_pos - 1 ;
     end
-    letter_x_pos = letter - 6 * letter_y_pos;
   end
 
   // calculate rom address
-  logic [$clog2(WIDTH*HEIGHT)-1:0] image_addr;
-  assign image_addr = (hcount_in - x_in + 38 * letter_x_pos) + ((vcount_in - y_in + 45 * letter_y_pos) * WIDTH);
+  logic [$clog2(WIDTH*HEIGHT)-1:0] image_addr_stage1, image_addr;
+
+  always_ff @(posedge pixel_clk_in) begin
+    if (rst_in) begin
+      image_addr_stage1 <= 0;
+      image_addr <= 0;
+    end else begin
+      image_addr_stage1 <= (hcount_in - x_in + 38 * letter_x_pos);
+      image_addr <= image_addr_stage1 + ((vcount_in - y_in + 45 * letter_y_pos) * WIDTH);
+    end
+  end
+  // assign image_addr = (hcount_in - x_in + 38 * letter_x_pos) + ((vcount_in - y_in + 45 * letter_y_pos) * WIDTH);
 
   logic in_sprite;
   assign in_sprite = ((hcount_in >= x_in && hcount_in < (x_in + 38)) &&
@@ -48,11 +63,13 @@ module image_sprite #(
   logic in_sprite3;
   logic in_sprite4;
   logic in_sprite5;
+  logic in_sprite6;
   always_ff @(posedge pixel_clk_in) begin
     in_sprite2 <= in_sprite;
     in_sprite3 <= in_sprite2;
     in_sprite4 <= in_sprite3;
     in_sprite5 <= in_sprite4;
+    in_sprite6 <= in_sprite5;
   end
 
   logic [7:0] pixel_num;
@@ -91,7 +108,7 @@ module image_sprite #(
   );
 
   // Modify the module below to use your BRAMs!
-  assign red_out =    (letter >= 26 || !in_sprite5) ? 255 : pixel_col[23:16];
-  assign green_out =  (letter >= 26 || !in_sprite5) ? 255 : pixel_col[15:8];
-  assign blue_out =   (letter >= 26 || !in_sprite5) ? 255 : pixel_col[7:0];
+  assign red_out =    (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[23:16];
+  assign green_out =  (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[15:8];
+  assign blue_out =   (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[7:0];
 endmodule
