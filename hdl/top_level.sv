@@ -49,10 +49,6 @@ module top_level
     .clk_xc(clk_xc),
     .clk_100(clk_100_passthrough),
     .reset(0));
-
-  logic tmds_signal [2:0];
-  logic tmds_signal2 [2:0];
-  
   
   logic debounced_output;
   debouncer btn1_db(.clk_in(clk_100_passthrough),
@@ -75,36 +71,111 @@ module top_level
     prev_output2 <= debounced_output2;
   end
 
+  logic [7:0]          red,green,blue;
+  logic [7:0]          red1,green1,blue1;
+  logic [7:0]          red2,green2,blue2;
+  
+  logic           hsync1,vsync1,active_draw1;
+  logic           hsync2,vsync2,active_draw2;
+  logic           hsync,vsync,active_draw;
 
   text_display display_text
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
-     .clk_5x(clk_5x),
      .sys_rst_pixel(btn[0]),
      .data_valid_in(debounced_output && !prev_output),
      .data_in(sw[4:0]),
      .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
-     .tmds_red_out(tmds_signal[2]),
-     .tmds_green_out(tmds_signal[1]),
-     .tmds_blue_out(tmds_signal[0])
+     .red_out(red1),
+     .green_out(green1),
+     .blue_out(blue1),
+     .hsync_hdmi_out(hsync1),
+     .vsync_hdmi_out(vsync1),
+     .active_draw_hdmi_out(active_draw1)
     );
     
   enigma_display display_enigma
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
-     .clk_5x(clk_5x),
      .sys_rst_pixel(btn[0]),
      .orig_letter_in(sw[4:0]),
      .code_letter_in(sw[9:5]),
-     .tmds_red_out(tmds_signal2[2]),
-     .tmds_green_out(tmds_signal2[1]),
-     .tmds_blue_out(tmds_signal2[0])
+     .red_out(red2),
+     .green_out(green2),
+     .blue_out(blue2),
+     .hsync_hdmi_out(hsync2),
+     .vsync_hdmi_out(vsync2),
+     .active_draw_hdmi_out(active_draw2)
     );
 
-  // logic tmds_muxed [2:0];
-  // always_ff @(posedge clk_100_passthrough) begin
-  //   tmds_muxed <= sw[15] ? tmds_signal2 : tmds_signal;
-  // end
+  always_comb begin
+    if(sw[15]) begin
+      red = red1;
+      green = green1;
+      blue = blue1;
+      hsync = hsync1;
+      vsync = vsync1;
+      active_draw = active_draw1;
+    end else begin
+      red = red2;
+      green = green2;
+      blue = blue2;
+      hsync = hsync2;
+      vsync = vsync2;
+      active_draw = active_draw2;
+    end
+  end
+  
+
+  
+  logic [9:0] tmds_10b [0:2];
+  logic tmds_signal [2:0];
+
+  tmds_encoder tmds_red(
+      .clk_in(clk_pixel),
+      .rst_in(btn[0]),
+      .data_in(red),
+      .control_in(2'b0),
+      .ve_in(active_draw),
+      .tmds_out(tmds_10b[2]));
+
+  tmds_encoder tmds_green(
+      .clk_in(clk_pixel),
+      .rst_in(btn[0]),
+      .data_in(green),
+      .control_in(2'b0),
+      .ve_in(active_draw),
+      .tmds_out(tmds_10b[1]));
+
+  tmds_encoder tmds_blue(
+      .clk_in(clk_pixel),
+      .rst_in(btn[0]),
+      .data_in(blue),
+      .control_in({vsync,hsync}),
+      .ve_in(active_draw),
+      .tmds_out(tmds_10b[0]));
+
+      
+
+  //three tmds_serializers (blue, green, red):
+  tmds_serializer red_ser(
+        .clk_pixel_in(clk_pixel),
+        .clk_5x_in(clk_5x),
+        .rst_in(btn[0]),
+        .tmds_in(tmds_10b[2]),
+        .tmds_out(tmds_signal[2]));
+  tmds_serializer green_ser(
+        .clk_pixel_in(clk_pixel),
+        .clk_5x_in(clk_5x),
+        .rst_in(btn[0]),
+        .tmds_in(tmds_10b[1]),
+        .tmds_out(tmds_signal[1]));
+  tmds_serializer blue_ser(
+        .clk_pixel_in(clk_pixel),
+        .clk_5x_in(clk_5x),
+        .rst_in(btn[0]),
+        .tmds_in(tmds_10b[0]),
+        .tmds_out(tmds_signal[0]));
 
   //output buffers generating differential signals:
   //three for the r,g,b signals and one that is at the pixel clock rate
@@ -112,9 +183,9 @@ module top_level
   //during blanking and sync periods to synchronize their faster bit clocks off
   //of the slower pixel clock (so they can recover a clock of about 742.5 MHz from
   //the slower 74.25 MHz clock)
-  OBUFDS OBUFDS_blue (.I(tmds_signal2[0]), .O(hdmi_tx_p[0]), .OB(hdmi_tx_n[0]));
-  OBUFDS OBUFDS_green(.I(tmds_signal2[1]), .O(hdmi_tx_p[1]), .OB(hdmi_tx_n[1]));
-  OBUFDS OBUFDS_red  (.I(tmds_signal2[2]), .O(hdmi_tx_p[2]), .OB(hdmi_tx_n[2]));
+  OBUFDS OBUFDS_blue (.I(tmds_signal[0]), .O(hdmi_tx_p[0]), .OB(hdmi_tx_n[0]));
+  OBUFDS OBUFDS_green(.I(tmds_signal[1]), .O(hdmi_tx_p[1]), .OB(hdmi_tx_n[1]));
+  OBUFDS OBUFDS_red  (.I(tmds_signal[2]), .O(hdmi_tx_p[2]), .OB(hdmi_tx_n[2]));
   OBUFDS OBUFDS_clock(.I(clk_pixel), .O(hdmi_clk_p), .OB(hdmi_clk_n));
   assign led[15:0] = 0;
 

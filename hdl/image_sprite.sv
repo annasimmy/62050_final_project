@@ -108,7 +108,7 @@ module image_sprite #(
   );
 
   // Modify the module below to use your BRAMs!
-  assign red_out =    (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[23:16];
-  assign green_out =  (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[15:8];
-  assign blue_out =   (letter == 0 || letter >= 26 || !in_sprite6) ? 255 : pixel_col[7:0];
+  assign red_out =    (letter == 0 || letter > 26 || !in_sprite6) ? 255 : pixel_col[23:16];
+  assign green_out =  (letter == 0 || letter > 26 || !in_sprite6) ? 255 : pixel_col[15:8];
+  assign blue_out =   (letter == 0 || letter > 26 || !in_sprite6) ? 255 : pixel_col[7:0];
 endmodule

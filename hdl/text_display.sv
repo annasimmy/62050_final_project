@@ -4,14 +4,16 @@
 module text_display (
     input wire clk_in,
     input wire clk_pixel,
-    input wire clk_5x,
     input wire sys_rst_pixel,
     input wire data_valid_in,
     input wire [4:0] data_in,
     input wire [1:0] scroll_dir_in,
-    output logic tmds_red_out,
-    output logic tmds_green_out,
-    output logic tmds_blue_out
+    output logic [7:0] red_out,
+    output logic [7:0] green_out,
+    output logic [7:0] blue_out,
+    output logic hsync_hdmi_out,
+    output logic vsync_hdmi_out,
+    output logic active_draw_hdmi_out
     );
 
     logic [10:0] counter;
@@ -57,11 +59,6 @@ module text_display (
     logic          active_draw_hdmi;
     logic [5:0]    frame_count_hdmi;
     logic          nf_hdmi;
-
-
-
-    // rgb output values
-    logic [7:0]          red,green,blue;
 
     logic [10:0] hcount_pipe [4:0];
     logic [9:0] vcount_pipe [4:0];
@@ -140,7 +137,26 @@ module text_display (
         addra <= hcount_left_pipe[4] + (vcount_up_pipe[4] << 5) + (scroll_lines << 5);
         addra2 <= addra;
         letter_letter2 <= letter_letter;
+
+        hsync_hdmi_out <= hsync_hdmi_pipe[10];
+        vsync_hdmi_out <= vsync_hdmi_pipe[10];
+        active_draw_hdmi_out <= active_draw_hdmi_pipe[10];
     end
+    
+
+    // HDMI video signal generator
+    video_sig_gen vsg
+        (
+        .pixel_clk_in(clk_pixel),
+        .rst_in(sys_rst_pixel),
+        .hcount_out(hcount_hdmi),
+        .vcount_out(vcount_hdmi),
+        .vs_out(vsync_hdmi),
+        .hs_out(hsync_hdmi),
+        .nf_out(nf_hdmi),
+        .ad_out(active_draw_hdmi),
+        .fc_out(frame_count_hdmi)
+        );
 
     
     xilinx_true_dual_port_read_first_2_clock_ram
@@ -180,70 +196,8 @@ module text_display (
         .x_in(letter_x),
         .y_in(letter_y),
         .letter(letter_letter2),
-        .red_out(red),
-        .green_out(green),
-        .blue_out(blue));
+        .red_out(red_out),
+        .green_out(green_out),
+        .blue_out(blue_out));
 
-    // HDMI video signal generator
-    video_sig_gen vsg
-        (
-        .pixel_clk_in(clk_pixel),
-        .rst_in(sys_rst_pixel),
-        .hcount_out(hcount_hdmi),
-        .vcount_out(vcount_hdmi),
-        .vs_out(vsync_hdmi),
-        .hs_out(hsync_hdmi),
-        .nf_out(nf_hdmi),
-        .ad_out(active_draw_hdmi),
-        .fc_out(frame_count_hdmi)
-        );
-
-
-    logic [9:0] tmds_10b [0:2];
-
-    tmds_encoder tmds_red(
-       .clk_in(clk_pixel),
-       .rst_in(sys_rst_pixel),
-       .data_in(red),
-       .control_in(2'b0),
-       .ve_in(active_draw_hdmi_pipe[11]),
-       .tmds_out(tmds_10b[2]));
-
-    tmds_encoder tmds_green(
-        .clk_in(clk_pixel),
-        .rst_in(sys_rst_pixel),
-        .data_in(green),
-        .control_in(2'b0),
-        .ve_in(active_draw_hdmi_pipe[11]),
-        .tmds_out(tmds_10b[1]));
-
-    tmds_encoder tmds_blue(
-        .clk_in(clk_pixel),
-        .rst_in(sys_rst_pixel),
-        .data_in(blue),
-        .control_in({vsync_hdmi_pipe[11],hsync_hdmi_pipe[11]}),
-        .ve_in(active_draw_hdmi_pipe[11]),
-        .tmds_out(tmds_10b[0]));
-
-        
-
-    //three tmds_serializers (blue, green, red):
-    tmds_serializer red_ser(
-         .clk_pixel_in(clk_pixel),
-         .clk_5x_in(clk_5x),
-         .rst_in(sys_rst_pixel),
-         .tmds_in(tmds_10b[2]),
-         .tmds_out(tmds_red_out));
-    tmds_serializer green_ser(
-         .clk_pixel_in(clk_pixel),
-         .clk_5x_in(clk_5x),
-         .rst_in(sys_rst_pixel),
-         .tmds_in(tmds_10b[1]),
-         .tmds_out(tmds_green_out));
-    tmds_serializer blue_ser(
-         .clk_pixel_in(clk_pixel),
-         .clk_5x_in(clk_5x),
-         .rst_in(sys_rst_pixel),
-         .tmds_in(tmds_10b[0]),
-         .tmds_out(tmds_blue_out));
 endmodule
