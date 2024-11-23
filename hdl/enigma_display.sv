@@ -41,9 +41,10 @@ module enigma_display (
     logic [10:0] hcount_left_pipe [3:0];
     logic [9:0] vcount_up_pipe [3:0];
     logic [10:0] hcount_pipe_2 [3:0];
-    logic          hsync_hdmi_pipe [10:0];
-    logic          vsync_hdmi_pipe [10:0];
-    logic          active_draw_hdmi_pipe [10:0];
+    logic shift_pipe   [6:0];
+    logic          hsync_hdmi_pipe [13:0];
+    logic          vsync_hdmi_pipe [13:0];
+    logic          active_draw_hdmi_pipe [13:0];
 
     logic [10:0] letter_hcount;
     logic [9:0] letter_vcount;
@@ -60,20 +61,24 @@ module enigma_display (
     always_ff @(posedge clk_pixel)begin
         hcount_pipe[0] <= hcount_hdmi;
         vcount_pipe[0] <= vcount_hdmi;
-        if(vcount_hdmi <= 210 && vcount_hdmi >= 110) begin
+        if((vcount_hdmi <= 210 && vcount_hdmi >= 110) || (vcount_hdmi <= 570 && vcount_hdmi >= 470)) begin
             vcount_up_pipe[0] <= 1;
             hcount_left_pipe[0] <= 0;
+            shift_pipe[0] <= (vcount_hdmi > 210) ? 1 : 0;
             if(hcount_hdmi >= 70) begin
                 hcount_pipe_2[0] <= hcount_hdmi - 70;
             end else begin
                 hcount_pipe_2[0] <= hcount_hdmi;
             end
-        end else if(vcount_hdmi <= 310) begin
-            if(vcount_hdmi <= 110) begin
+        end else if(vcount_hdmi >= 310 && vcount_hdmi <= 370) begin
+            vcount_up_pipe[0] <= 3;
+        end else if(vcount_hdmi <= 670) begin
+            if(vcount_hdmi <= 110 || (vcount_hdmi >= 370 && vcount_hdmi <= 470)) begin
                 vcount_up_pipe[0] <= 0;
             end else begin
                 vcount_up_pipe[0] <= 2;
             end
+            shift_pipe[0] <= (vcount_hdmi > 310) ? 1 : 0;
             if(hcount_hdmi >= 1120) begin
                 hcount_left_pipe[0] <= 8;
                 hcount_pipe_2[0] <= hcount_hdmi - 1120;
@@ -88,10 +93,14 @@ module enigma_display (
         hsync_hdmi_pipe[0] <= hsync_hdmi;
         vsync_hdmi_pipe[0] <= vsync_hdmi;
         active_draw_hdmi_pipe[0] <= active_draw_hdmi;
-        for (int i = 1; i <= 10; i = i+1)begin
+        for (int i = 1; i <= 13; i = i+1)begin
             hsync_hdmi_pipe[i] <= hsync_hdmi_pipe[i - 1];
             vsync_hdmi_pipe[i] <= vsync_hdmi_pipe[i - 1];
             active_draw_hdmi_pipe[i] <= active_draw_hdmi_pipe[i - 1];
+        end
+        
+        for (int i = 1; i <= 6; i = i+1)begin
+            shift_pipe[i] <= shift_pipe[i - 1];
         end
 
         for (int i = 1; i <= 3; i = i+1)begin
@@ -123,16 +132,19 @@ module enigma_display (
         end else begin
             letter_x <= 60 + hcount_left_pipe[3] * 140;
         end
-        letter_y <= 40 + vcount_up_pipe[3] * 100;
+        letter_y <= 40 + vcount_up_pipe[3] * 100 + 360 * shift_pipe[3];
 
-        hsync_hdmi_out <= hsync_hdmi_pipe[10];
-        vsync_hdmi_out <= vsync_hdmi_pipe[10];
-        active_draw_hdmi_out <= active_draw_hdmi_pipe[10];
+        hsync_hdmi_out <= hsync_hdmi_pipe[13];
+        vsync_hdmi_out <= vsync_hdmi_pipe[13];
+        active_draw_hdmi_out <= active_draw_hdmi_pipe[13];
+        // hsync_hdmi_out <= hsync_hdmi_pipe[0];
+        // vsync_hdmi_out <= vsync_hdmi_pipe[0];
+        // active_draw_hdmi_out <= active_draw_hdmi_pipe[0];
 
-        if(letter_hcount > letter_x + 20) begin
-            x_dist <= letter_hcount - letter_x - 20;
+        if(letter_hcount > letter_x + 22) begin
+            x_dist <= letter_hcount - letter_x - 22;
         end else begin
-            x_dist <= letter_x + 20 - letter_hcount;
+            x_dist <= letter_x + 22 - letter_hcount;
         end
 
         if(letter_vcount > letter_y + 23) begin
@@ -144,21 +156,19 @@ module enigma_display (
         
         if(dist_sq < 1225 && letter_letter < 26) begin
             if(red > 200) begin
-                red_out <= 255;
+                red_out <= shift_pipe[6] ? ((letter_map[letter_letter] == orig_letter_in) ? 50 : 200) : 200;
             end else begin
                 red_out <= red;
             end
             if(green > 200) begin
-                green_out <= 255;
+                green_out <= shift_pipe[6] ? ((letter_map[letter_letter] == orig_letter_in) ? 50 : 200) : 200;
             end else begin
                 green_out <= green;
             end
             if(blue > 200) begin
-                if(letter_map[letter_letter] == code_letter_in) begin
-                    blue_out <= 0;
-                end else begin
-                    blue_out <= 255;
-                end
+                blue_out <= shift_pipe[6] ? 
+                    ((letter_map[letter_letter] == orig_letter_in) ? 50 : 200) : 
+                    ((letter_map[letter_letter] == code_letter_in) ? 0 : 200);
             end else begin
                 blue_out <= blue;
             end
@@ -186,9 +196,6 @@ module enigma_display (
         .fc_out(frame_count_hdmi)
         );
 
-    // width 228, height 225 for 6x5 grid
-    // width 38, height 45 per letter
-    // if I do 40x45, that perfectly fits 32x16 letters in a 1280x720 display
     image_sprite #(
         .WIDTH(228),
         .HEIGHT(225))

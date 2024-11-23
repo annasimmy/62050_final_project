@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Tue Nov 19 04:06:55 2024
-| Host         : eecs-digital-42 running 64-bit Ubuntu 24.04.1 LTS
+| Date         : Sat Nov 23 03:03:39 2024
+| Host         : eecs-digital-48 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_timing -file obj/post_place_timing.rpt
 | Design       : top_level
 | Device       : 7s50-csga324
@@ -12,19 +12,19 @@ Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanc
 
 Timing Report
 
-Slack (MET) :             1.747ns  (required time - arrival time)
-  Source:                 display_enigma/letter_letter_reg[2]/C
-                            (rising edge-triggered cell FDRE clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
-  Destination:            display_enigma/letter_sprite/image_addr_reg/A[11]
+Slack (MET) :             1.238ns  (required time - arrival time)
+  Source:                 display_enigma/letter_letter_reg[1]/C
+                            (rising edge-triggered cell FDSE clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
+  Destination:            display_enigma/letter_sprite/image_addr_reg/A[15]
                             (rising edge-triggered cell DSP48E1 clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
   Path Group:             clk_pixel_cw_hdmi
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            13.468ns  (clk_pixel_cw_hdmi rise@13.468ns - clk_pixel_cw_hdmi rise@0.000ns)
-  Data Path Delay:        7.656ns  (logic 3.969ns (51.842%)  route 3.687ns (48.158%))
-  Logic Levels:           9  (CARRY4=5 LUT2=1 LUT3=1 LUT5=2)
-  Clock Path Skew:        0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    -2.034ns = ( 11.434 - 13.468 ) 
-    Source Clock Delay      (SCD):    -2.519ns
+  Data Path Delay:        8.170ns  (logic 3.902ns (47.760%)  route 4.268ns (52.240%))
+  Logic Levels:           9  (CARRY4=5 LUT2=1 LUT5=2 LUT6=1)
+  Clock Path Skew:        0.054ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -2.033ns = ( 11.435 - 13.468 ) 
+    Source Clock Delay      (SCD):    -2.523ns
     Clock Pessimism Removal (CPR):    -0.436ns
   Clock Uncertainty:      0.210ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -48,35 +48,35 @@ Slack (MET) :             1.747ns  (required time - arrival time)
                                                      -3.393    -5.835 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.661    -4.174    wizard_hdmi/clk_pixel_cw_hdmi
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096    -4.078 r  wizard_hdmi/clkout1_buf/O
-                         net (fo=474, estimated)      1.559    -2.519    display_enigma/clk_pixel
-    SLICE_X14Y30         FDRE                                         r  display_enigma/letter_letter_reg[2]/C
+                         net (fo=487, estimated)      1.555    -2.523    display_enigma/clk_pixel
+    SLICE_X44Y28         FDSE                                         r  display_enigma/letter_letter_reg[1]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X14Y30         FDRE (Prop_fdre_C_Q)         0.478    -2.041 r  display_enigma/letter_letter_reg[2]/Q
-                         net (fo=6, estimated)        0.967    -1.074    display_enigma/letter_sprite/blue_out_reg[0]_0[2]
-    SLICE_X15Y27         LUT5 (Prop_lut5_I2_O)        0.323    -0.751 r  display_enigma/letter_sprite/g0_b3/O
-                         net (fo=28, estimated)       1.058     0.307    display_enigma/letter_sprite/g0_b3_n_0
-    SLICE_X10Y26         LUT5 (Prop_lut5_I0_O)        0.332     0.639 r  display_enigma/letter_sprite/image_addr3__0_carry_i_6__0/O
-                         net (fo=1, routed)           0.000     0.639    display_enigma/letter_sprite/image_addr3__0_carry_i_6__0_n_0
-    SLICE_X10Y26         CARRY4 (Prop_carry4_S[1]_O[3])
-                                                      0.643     1.282 r  display_enigma/letter_sprite/image_addr3__0_carry/O[3]
-                         net (fo=1, estimated)        0.434     1.716    display_enigma/letter_sprite/image_addr3__0_carry_n_4
-    SLICE_X11Y27         LUT2 (Prop_lut2_I1_O)        0.307     2.023 r  display_enigma/letter_sprite/i___6_carry_i_8/O
-                         net (fo=1, routed)           0.000     2.023    display_enigma/letter_sprite/i___6_carry_i_8_n_0
-    SLICE_X11Y27         CARRY4 (Prop_carry4_S[1]_CO[3])
-                                                      0.550     2.573 r  display_enigma/letter_sprite/i___6_carry_i_1/CO[3]
-                         net (fo=1, estimated)        0.000     2.573    display_enigma/letter_sprite/i___6_carry_i_1_n_0
-    SLICE_X11Y28         CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.334     2.907 r  display_enigma/letter_sprite/i___6_carry__0_i_1/O[1]
-                         net (fo=2, estimated)        0.536     3.443    display_enigma/letter_sprite/PCOUT__0[9]
-    SLICE_X12Y28         LUT3 (Prop_lut3_I2_O)        0.303     3.746 r  display_enigma/letter_sprite/i___6_carry__0_i_2/O
-                         net (fo=1, routed)           0.000     3.746    display_enigma/letter_sprite/i___6_carry__0_i_2_n_0
-    SLICE_X12Y28         CARRY4 (Prop_carry4_S[3]_CO[3])
-                                                      0.376     4.122 r  display_enigma/letter_sprite/image_addr2_inferred__0/i___6_carry__0/CO[3]
-                         net (fo=1, estimated)        0.000     4.122    display_enigma/letter_sprite/image_addr2_inferred__0/i___6_carry__0_n_0
-    SLICE_X12Y29         CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.323     4.445 r  display_enigma/letter_sprite/image_addr2_inferred__0/i___6_carry__1/O[1]
-                         net (fo=1, estimated)        0.692     5.137    display_enigma/letter_sprite/image_addr2_inferred__0/i___6_carry__1_n_6
-    DSP48_X0Y10          DSP48E1                                      r  display_enigma/letter_sprite/image_addr_reg/A[11]
+    SLICE_X44Y28         FDSE (Prop_fdse_C_Q)         0.456    -2.067 r  display_enigma/letter_letter_reg[1]/Q
+                         net (fo=6, estimated)        0.987    -1.080    display_enigma/letter_sprite/red_out[6]_i_4[1]
+    SLICE_X44Y27         LUT5 (Prop_lut5_I1_O)        0.152    -0.928 r  display_enigma/letter_sprite/g0_b3/O
+                         net (fo=29, estimated)       1.412     0.484    display_enigma/letter_sprite/out[3]
+    SLICE_X53Y25         LUT5 (Prop_lut5_I0_O)        0.332     0.816 r  display_enigma/letter_sprite/image_addr3__0_carry_i_7/O
+                         net (fo=1, routed)           0.000     0.816    display_enigma/letter_sprite/image_addr3__0_carry_i_7_n_0
+    SLICE_X53Y25         CARRY4 (Prop_carry4_S[0]_O[3])
+                                                      0.606     1.422 r  display_enigma/letter_sprite/image_addr3__0_carry/O[3]
+                         net (fo=1, estimated)        0.619     2.041    display_enigma/letter_sprite/image_addr3__0_carry_n_4
+    SLICE_X53Y28         LUT2 (Prop_lut2_I1_O)        0.306     2.347 r  display_enigma/letter_sprite/i___8_carry__0_i_8/O
+                         net (fo=1, routed)           0.000     2.347    display_enigma/letter_sprite/i___8_carry__0_i_8_n_0
+    SLICE_X53Y28         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     2.897 r  display_enigma/letter_sprite/i___8_carry__0_i_1__0/CO[3]
+                         net (fo=1, estimated)        0.000     2.897    display_enigma/letter_sprite/i___8_carry__0_i_1__0_n_0
+    SLICE_X53Y29         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     3.231 r  display_enigma/letter_sprite/i___8_carry__1_i_1__0/O[1]
+                         net (fo=2, estimated)        0.471     3.702    display_enigma/letter_sprite/PCOUT[9]
+    SLICE_X55Y28         LUT6 (Prop_lut6_I5_O)        0.303     4.005 r  display_enigma/letter_sprite/i___8_carry__1_i_4__0/O
+                         net (fo=1, routed)           0.000     4.005    display_enigma/letter_sprite/i___8_carry__1_i_4__0_n_0
+    SLICE_X55Y28         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     4.555 r  display_enigma/letter_sprite/image_addr2_inferred__0/i___8_carry__1/CO[3]
+                         net (fo=1, estimated)        0.000     4.555    display_enigma/letter_sprite/image_addr2_inferred__0/i___8_carry__1_n_0
+    SLICE_X55Y29         CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.313     4.868 r  display_enigma/letter_sprite/image_addr2_inferred__0/i___8_carry__2/O[3]
+                         net (fo=1, estimated)        0.779     5.647    display_enigma/letter_sprite/image_addr2_inferred__0/i___8_carry__2_n_4
+    DSP48_X1Y9           DSP48E1                                      r  display_enigma/letter_sprite/image_addr_reg/A[15]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pixel_cw_hdmi rise edge)
@@ -94,17 +94,17 @@ Slack (MET) :             1.747ns  (required time - arrival time)
                                                      -3.187     8.237 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.578     9.815    wizard_hdmi/clk_pixel_cw_hdmi
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091     9.906 r  wizard_hdmi/clkout1_buf/O
-                         net (fo=474, estimated)      1.529    11.434    display_enigma/letter_sprite/clk_pixel
-    DSP48_X0Y10          DSP48E1                                      r  display_enigma/letter_sprite/image_addr_reg/CLK
-                         clock pessimism             -0.436    10.998    
-                         clock uncertainty           -0.210    10.788    
-    DSP48_X0Y10          DSP48E1 (Setup_dsp48e1_CLK_A[11])
-                                                     -3.904     6.884    display_enigma/letter_sprite/image_addr_reg
+                         net (fo=487, estimated)      1.530    11.435    display_enigma/letter_sprite/clk_pixel
+    DSP48_X1Y9           DSP48E1                                      r  display_enigma/letter_sprite/image_addr_reg/CLK
+                         clock pessimism             -0.436    10.999    
+                         clock uncertainty           -0.210    10.789    
+    DSP48_X1Y9           DSP48E1 (Setup_dsp48e1_CLK_A[15])
+                                                     -3.904     6.885    display_enigma/letter_sprite/image_addr_reg
   -------------------------------------------------------------------
-                         required time                          6.884    
-                         arrival time                          -5.137    
+                         required time                          6.885    
+                         arrival time                          -5.647    
   -------------------------------------------------------------------
-                         slack                                  1.747    
+                         slack                                  1.238    
 
 
 
