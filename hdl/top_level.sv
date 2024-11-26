@@ -9,6 +9,7 @@ module top_level
    input wire [3:0]    btn,
    output logic [2:0]  rgb0,
    output logic [2:0]  rgb1,
+   output logic [7:0] pmodb, //output I/O used for IR input
    // seven segment
    output logic [3:0]  ss0_an,//anode control for upper four digits of seven-seg display
    output logic [3:0]  ss1_an,//anode control for lower four digits of seven-seg display
@@ -34,6 +35,9 @@ module top_level
   logic          clk_xc;
 
   logic          clk_100_passthrough;
+
+  logic sys_rst;
+  assign sys_rst = btn[0];
 
   // clocking wizards to generate the clock speeds we need for our different domains
   // clk_camera: 200MHz, fast enough to comfortably sample the cameera's PCLK (50MHz)
@@ -188,6 +192,89 @@ module top_level
   OBUFDS OBUFDS_red  (.I(tmds_signal[2]), .O(hdmi_tx_p[2]), .OB(hdmi_tx_n[2]));
   OBUFDS OBUFDS_clock(.I(clk_pixel), .O(hdmi_clk_p), .OB(hdmi_clk_n));
   assign led[15:0] = 0;
+
+
+// MESSAGE SENDING: Enigma encoding and 
+
+
+  logic enigma_data_valid;
+  logic last_enigma_data_valid;
+  logic [4:0] enigma_data_out;
+  logic [29:0] enigma_letter_count; //count up to 1000 letters
+  logic [29:0] ir_letter_count; //count up to 1000 letters
+  logic [4:0] letter_buffer_out;
+  logic ir_busy_out;
+  logic last_ir_busy_out;
+  logic ir_t_signal_out;
+  assign pmodb[6] = ir_t_signal_out;
+
+  //TODO update 
+
+  // Enigma Initialization
+  enigma enig(.clk_in(clk_100_passthrough),
+              .rst_in(sys_rst),
+              .rotor_select(sw[8:0]),
+              .rotor_initial(),
+              .data_valid_in(),
+              .data_in(sw[4:0]),
+              .data_valid_out(enigma_data_valid),
+              .data_out(enigma_data_out)
+              );
+
+  // IR Transmission from Enigma coded letters
+  ir_transmitter #(.MESSAGE_LENGTH(5))
+            ir_t (.clk_in(clk_100_passthrough),
+                  .rst_in(sys_rst),
+                  .data_valid_in(letter_buffer_out),
+                  .data_in(1),
+                  .busy_out(ir_busy_out),
+                  .signal_out(ir_t_signal_out)); //pmodb6
+
+
+  // using BRAM - could also use AXIS FIFO if this doesn't work
+  xilinx_true_dual_port_read_first_1_clock_ram #(
+      .RAM_WIDTH(5),
+      .RAM_DEPTH(1000),
+      .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_ram (
+      .clka(clk_100_passthrough),     // Clock 
+      //writing port:
+      .addra(enigma_letter_count),   // Port A address bus,
+      .dina(enigma_data_out),     // Port A RAM input data
+      .wea(enigma_data_valid),       // Port A write enable
+      //reading port:
+      .addrb(ir_letter_count),   // Port B address bus,
+      .doutb(letter_buffer_out),    // Port B RAM output data,
+      .douta(),   // Port A RAM output data, width determined from RAM_WIDTH
+      .dinb(),     // Port B RAM input data, width determined from RAM_WIDTH
+      .web(1'b0),       // Port B write enable
+      .ena(1'b1),       // Port A RAM Enable
+      .enb(1'b1),       // Port B RAM Enable,
+      .rsta(1'b0),     // Port A output reset 
+      .rstb(1'b0),     // Port B output reset
+      .regcea(1'b1),   // Port A output register enable
+      .regceb(1'b1)    // Port B output register enable
+      );
+
+
+  always_ff @(posedge clk_100_passthrough) begin
+    last_ir_busy_out <= ir_busy_out;
+    if(sys_rst) begin
+      ir_letter_count <= 0;
+      enigma_letter_count <= 0;
+    end
+    else begin
+      if (ir_busy_out && ! last_ir_busy_out) begin
+        ir_letter_count <= ir_letter_count == 999 ? 0 : ir_letter_count + 1;
+      end
+
+      if (enigma_data_valid && ! last_enigma_data_valid) begin
+        enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
+      end
+    end
+    
+  end
+
+
 
 endmodule // top_level
 

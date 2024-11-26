@@ -2,9 +2,9 @@
 `default_nettype none
 module ir_transmitter
        #( parameter SBD  = 240_000, //sync burst duration
-          parameter BSD = 60_000, //bit burst duration
-          parameter BBD0 = 60_000, //bit silence duration (for 0)
-          parameter BBD1 = 120_000, //bit silence duration (for 1)
+          parameter BSD = 60_000, //bit silence duration
+          parameter BBD0 = 60_000, //bit burst duration (for 0)
+          parameter BBD1 = 120_000, //bit burst duration (for 1)
           parameter MARGIN = 20_000, //The +/- of your signals
           parameter MESSAGE_LENGTH = 30
           // the duration is in terms of number of cycles per each duration
