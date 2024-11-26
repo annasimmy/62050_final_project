@@ -1,7 +1,6 @@
 module data_module (
 	input wire clk_in,
   input wire rst_in,
-  input wire ready_in,
   input wire data_valid_in,
   input wire [15:0] sw,
   output logic rotor_valid_out,
@@ -29,15 +28,18 @@ module data_module (
       end
       if(data_valid_in && !prev_data_valid) begin
         if(sw[15:15] == 1'b0) begin
+          // Setting the initial rotor rotations
           rotor_initial_out <= sw[14:0];
         end else if(sw[15:14] == 2'b10) begin
+          // Setting the rotor selections
           rotor_select_out <= sw[8:0];
-          if(ready_in && !rotor_valid_out) begin
+          if(!rotor_valid_out) begin
             rotor_valid_out <= 1;
           end
         end else begin 
+          // Setting the character to send (after doing initial rotor setup)
           char_out <= sw[4:0];
-          if(ready_in && !letter_valid_out) begin
+          if(!letter_valid_out) begin
             letter_valid_out <= 1;
           end
         end
