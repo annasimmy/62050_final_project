@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Sat Nov 23 03:03:26 2024
-| Host         : eecs-digital-48 running 64-bit Ubuntu 24.04.1 LTS
+| Date         : Tue Nov 26 13:50:31 2024
+| Host         : eecs-digital-40 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_utilization -file obj/post_synth_util.rpt -hierarchical -hierarchical_depth 4
 | Design       : top_level
 | Device       : xc7s50csga324-1
@@ -22,31 +22,39 @@ Table of Contents
 +-----------------------+-----------------------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
 |        Instance       |                        Module                       | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
 +-----------------------+-----------------------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
-| top_level             |                                               (top) |        853 |        794 |       0 |   59 | 412 |     32 |      3 |          9 |
+| top_level             |                                               (top) |        951 |        892 |       0 |   59 | 530 |     32 |      3 |          9 |
 |   (top_level)         |                                               (top) |          0 |          0 |       0 |    0 |   2 |      0 |      0 |          0 |
 |   blue_ser            |                                     tmds_serializer |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
 |   btn1_db             |                                           debouncer |         26 |         26 |       0 |    0 |  21 |      0 |      0 |          0 |
 |   btn2_db             |                                         debouncer_0 |         26 |         26 |       0 |    0 |  21 |      0 |      0 |          0 |
-|   display_enigma      |                                      enigma_display |        367 |        341 |       0 |   26 | 146 |     16 |      1 |          6 |
-|     (display_enigma)  |                                      enigma_display |        155 |        130 |       0 |   25 | 111 |      0 |      0 |          5 |
-|     letter_sprite     |                                      image_sprite_5 |        139 |        138 |       0 |    1 |   1 |     16 |      1 |          1 |
+|   display_enigma      |                                      enigma_display |        359 |        333 |       0 |   26 | 146 |     16 |      1 |          6 |
+|     (display_enigma)  |                                      enigma_display |        152 |        127 |       0 |   25 | 111 |      0 |      0 |          5 |
+|     letter_sprite     |                                      image_sprite_5 |        129 |        128 |       0 |    1 |   1 |     16 |      1 |          1 |
 |       (letter_sprite) |                                      image_sprite_5 |        110 |        109 |       0 |    1 |   1 |      0 |      0 |          1 |
 |       brom1           |                 xilinx_single_port_ram_read_first_7 |          0 |          0 |       0 |    0 |   0 |     16 |      0 |          0 |
-|       brrom2          | xilinx_single_port_ram_read_first__parameterized0_8 |         29 |         29 |       0 |    0 |   0 |      0 |      1 |          0 |
-|     vsg               |                                     video_sig_gen_6 |         73 |         73 |       0 |    0 |  34 |      0 |      0 |          0 |
-|   display_text        |                                        text_display |        431 |        398 |       0 |   33 | 179 |     16 |      2 |          3 |
+|       brrom2          | xilinx_single_port_ram_read_first__parameterized0_8 |         19 |         19 |       0 |    0 |   0 |      0 |      1 |          0 |
+|     vsg               |                                     video_sig_gen_6 |         78 |         78 |       0 |    0 |  34 |      0 |      0 |          0 |
+|   display_text        |                                        text_display |        421 |        388 |       0 |   33 | 179 |     16 |      2 |          3 |
 |     (display_text)    |                                        text_display |         95 |         63 |       0 |   32 | 144 |      0 |      0 |          2 |
-|     letter_sprite     |                                        image_sprite |        272 |        271 |       0 |    1 |   1 |     16 |      1 |          1 |
+|     letter_sprite     |                                        image_sprite |        264 |        263 |       0 |    1 |   1 |     16 |      1 |          1 |
 |       (letter_sprite) |                                        image_sprite |        105 |        104 |       0 |    1 |   1 |      0 |      0 |          1 |
 |       brom1           |                   xilinx_single_port_ram_read_first |          0 |          0 |       0 |    0 |   0 |     16 |      0 |          0 |
-|       brrom2          |   xilinx_single_port_ram_read_first__parameterized0 |        167 |        167 |       0 |    0 |   0 |      0 |      1 |          0 |
+|       brrom2          |   xilinx_single_port_ram_read_first__parameterized0 |        159 |        159 |       0 |    0 |   0 |      0 |      1 |          0 |
 |     text_bram         |        xilinx_true_dual_port_read_first_2_clock_ram |         12 |         12 |       0 |    0 |   0 |      0 |      1 |          0 |
-|     vsg               |                                       video_sig_gen |         52 |         52 |       0 |    0 |  34 |      0 |      0 |          0 |
+|     vsg               |                                       video_sig_gen |         50 |         50 |       0 |    0 |  34 |      0 |      0 |          0 |
 |   green_ser           |                                   tmds_serializer_1 |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
+|   ir_t                |                                      ir_transmitter |         54 |         54 |       0 |    0 |  67 |      0 |      0 |          0 |
+|     (ir_t)            |                                      ir_transmitter |         40 |         40 |       0 |    0 |  40 |      0 |      0 |          0 |
+|     ir_pwm            |                                                 pwm |         14 |         14 |       0 |    0 |  27 |      0 |      0 |          0 |
+|       mc              |                                         evt_counter |         14 |         14 |       0 |    0 |  27 |      0 |      0 |          0 |
+|   mid                 |                                          ir_decoder |         51 |         51 |       0 |    0 |  49 |      0 |      0 |          0 |
+|     (mid)             |                                          ir_decoder |          9 |          9 |       0 |    0 |  16 |      0 |      0 |          0 |
+|     mcc               |                                     current_counter |         42 |         42 |       0 |    0 |  33 |      0 |      0 |          0 |
 |   red_ser             |                                   tmds_serializer_2 |          1 |          1 |       0 |    0 |   1 |      0 |      0 |          0 |
-|   tmds_blue           |                                        tmds_encoder |          1 |          1 |       0 |    0 |  14 |      0 |      0 |          0 |
-|   tmds_green          |                                      tmds_encoder_3 |          1 |          1 |       0 |    0 |  14 |      0 |      0 |          0 |
-|   tmds_red            |                                      tmds_encoder_4 |          1 |          1 |       0 |    0 |  14 |      0 |      0 |          0 |
+|   s1                  |                                        synchronizer |          2 |          2 |       0 |    0 |   2 |      0 |      0 |          0 |
+|   tmds_blue           |                                        tmds_encoder |          4 |          4 |       0 |    0 |  14 |      0 |      0 |          0 |
+|   tmds_green          |                                      tmds_encoder_3 |          4 |          4 |       0 |    0 |  14 |      0 |      0 |          0 |
+|   tmds_red            |                                      tmds_encoder_4 |          4 |          4 |       0 |    0 |  14 |      0 |      0 |          0 |
 |   wizard_hdmi         |                                     cw_hdmi_clk_wiz |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
 |   wizard_migcam       |                                     cw_fast_clk_wiz |          0 |          0 |       0 |    0 |   0 |      0 |      0 |          0 |
 +-----------------------+-----------------------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+

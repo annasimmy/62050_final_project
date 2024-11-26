@@ -9,7 +9,8 @@ module top_level
    input wire [3:0]    btn,
    output logic [2:0]  rgb0,
    output logic [2:0]  rgb1,
-   output logic [7:0] pmodb, //output I/O used for IR input
+   input wire [3:0] pmodb_i,
+   output logic [3:0] pmodb_o, //output I/O used for IR input
    // seven segment
    output logic [3:0]  ss0_an,//anode control for upper four digits of seven-seg display
    output logic [3:0]  ss1_an,//anode control for lower four digits of seven-seg display
@@ -191,32 +192,39 @@ module top_level
   OBUFDS OBUFDS_green(.I(tmds_signal[1]), .O(hdmi_tx_p[1]), .OB(hdmi_tx_n[1]));
   OBUFDS OBUFDS_red  (.I(tmds_signal[2]), .O(hdmi_tx_p[2]), .OB(hdmi_tx_n[2]));
   OBUFDS OBUFDS_clock(.I(clk_pixel), .O(hdmi_clk_p), .OB(hdmi_clk_n));
-  assign led[15:0] = 0;
+  // assign led[15:0] = 0;
 
 
 // MESSAGE SENDING: Enigma encoding and 
-
+  logic [8:0] rotor_select_out;
+  logic [14:0] rotor_initial_out;
+  logic [4:0] char_out;
+  logic letter_valid_out;
+  logic rotor_valid_out;
 
   logic enigma_data_valid;
   logic last_enigma_data_valid;
   logic [4:0] enigma_data_out;
+  // for BRAM addressing
   logic [29:0] enigma_letter_count; //count up to 1000 letters
   logic [29:0] ir_letter_count; //count up to 1000 letters
   logic [4:0] letter_buffer_out;
+  logic letter_buffer_valid;
   logic ir_busy_out;
   logic last_ir_busy_out;
   logic ir_t_signal_out;
-  assign pmodb[6] = ir_t_signal_out;
+  assign pmodb_o[2] = ir_t_signal_out;
 
   //TODO update 
 
+
   // Enigma Initialization
   enigma enig(.clk_in(clk_100_passthrough),
-              .rst_in(sys_rst),
-              .rotor_select(sw[8:0]),
-              .rotor_initial(),
-              .data_valid_in(),
-              .data_in(sw[4:0]),
+              .rst_in(rotor_valid_out), // TODO do we want a separate reset?
+              .rotor_select(rotor_select_out),
+              .rotor_initial(rotor_initial_out),
+              .data_valid_in(letter_valid_out),
+              .data_in(char_out),
               .data_valid_out(enigma_data_valid),
               .data_out(enigma_data_out)
               );
@@ -225,8 +233,8 @@ module top_level
   ir_transmitter #(.MESSAGE_LENGTH(5))
             ir_t (.clk_in(clk_100_passthrough),
                   .rst_in(sys_rst),
-                  .data_valid_in(letter_buffer_out),
-                  .data_in(1),
+                  .data_valid_in(letter_buffer_valid),
+                  .data_in(letter_buffer_out),
                   .busy_out(ir_busy_out),
                   .signal_out(ir_t_signal_out)); //pmodb6
 
@@ -244,8 +252,8 @@ module top_level
       //reading port:
       .addrb(ir_letter_count),   // Port B address bus,
       .doutb(letter_buffer_out),    // Port B RAM output data,
-      .douta(),   // Port A RAM output data, width determined from RAM_WIDTH
-      .dinb(),     // Port B RAM input data, width determined from RAM_WIDTH
+      .douta(),   // never read from this side
+      .dinb(),     // never write to this side
       .web(1'b0),       // Port B write enable
       .ena(1'b1),       // Port A RAM Enable
       .enb(1'b1),       // Port B RAM Enable,
@@ -263,15 +271,74 @@ module top_level
       enigma_letter_count <= 0;
     end
     else begin
+      // if one letter has been transmitted, move on to read the next letter
       if (ir_busy_out && ! last_ir_busy_out) begin
         ir_letter_count <= ir_letter_count == 999 ? 0 : ir_letter_count + 1;
       end
-
+      // TODO update letter_buffer_valid
+      // update to write in the next letter address every time a letter is output from the enigma module
       if (enigma_data_valid && ! last_enigma_data_valid) begin
+        letter_buffer_valid <= 1; // only want letter buffer valid once for the ir transmitter
         enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
+      end
+      else if(!ir_busy_out) begin
+        letter_buffer_valid <= 0;
       end
     end
     
+  end
+
+  // IR receiving message
+
+  //7-segment display-related concepts:
+  logic [31:0] val_to_display; //either the spi data or the btn_count data (default)
+  logic [6:0] ss_c; //used to grab output cathode signal for 7s leds
+ 
+  seven_segment_controller mssc(.clk_in(clk_100_passthrough),
+                                .rst_in(sys_rst),
+                                .val_in(val_to_display),
+                                .cat_out(ss_c),
+                                .an_out({ss0_an, ss1_an}));
+  assign ss0_c = ss_c; //control upper four digit's cathodes
+  assign ss1_c = ss_c; //same as above but for lower four digits
+ 
+  logic ir_signal; //incoming infrared signal (already demodulated)
+  logic ir_signal_clean; //synchronize incoming infrared to avoid bugs from setup/hold violations
+  assign ir_signal = pmodb_i[3]; //link to pmodb[3]
+ 
+  synchronizer s1
+        ( .clk_in(clk_100_passthrough),
+          .rst_in(sys_rst),
+          .us_in(ir_signal),
+          .s_out(ir_signal_clean));
+ 
+  //infrared decoder
+  logic [31:0] code;
+  logic [2:0] error;
+  logic [3:0] ir_state;
+  logic [2:0] locked_error;
+  logic new_code;
+ 
+  //for debugging:
+  //~clean: led[0] will flash when signal coming in
+  //locked_error[2:0]: led[3:1] will display error_out from fsm
+  //ir_state[3:0]: led[7:4] will display current state of FSM
+  assign led = {ir_state,locked_error,~ir_signal_clean};
+ 
+  ir_decoder #(  .MESSAGE_LENGTH(5)) 
+             mid (  .clk_in(clk_100_passthrough),
+                    .rst_in(sys_rst),
+                    .signal_in(ir_signal_clean),
+                    .code_out(code),
+                    .state_out(ir_state),
+                    .error_out(error),
+                    .new_code_out(new_code));
+ 
+  //code to grab new full code when indicated by module!
+  //code to grab and display any errors that you may generate!
+  always_ff @(posedge clk_100_passthrough)begin
+    val_to_display <= sys_rst?0:new_code?code:val_to_display;
+    locked_error <= sys_rst?0:|error?error:locked_error;
   end
 
 
