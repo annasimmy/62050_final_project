@@ -24,10 +24,10 @@ module top_level
 
   assign rgb0 = 0;
   assign rgb1 = 0;
-  assign ss0_an = 0;
-  assign ss1_an = 0;
-  assign ss0_c = 0;
-  assign ss1_c = 0;
+  // assign ss0_an = 0;
+  // assign ss1_an = 0;
+  // assign ss0_c = 0;
+  // assign ss1_c = 0;
   
   // Clock and Reset Signals
   logic          clk_camera;
@@ -86,7 +86,7 @@ module top_level
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .data_valid_in(debounced_output && !prev_output),
+     .data_valid_in(debounced_output && !prev_output &&sw[15:14]),
      .data_in(sw[4:0]),
      .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
      .red_out(red),
@@ -208,10 +208,11 @@ module top_level
 
   // Enigma Initialization
   enigma enig(.clk_in(clk_100_passthrough),
-              .rst_in(rotor_valid_out), // TODO do we want a separate reset?
+              .rst_in(btn[0]), // TODO do we want a separate reset?
               .rotor_select(rotor_select_out),
               .rotor_initial(rotor_initial_out),
               .data_valid_in(letter_valid_out),
+              .rotor_valid_in(rotor_valid_out),
               .data_in(char_out),
               .data_valid_out(enigma_data_valid),
               .data_out(enigma_data_out)
@@ -221,8 +222,8 @@ module top_level
   ir_transmitter #(.MESSAGE_LENGTH(5))
             ir_t (.clk_in(clk_100_passthrough),
                   .rst_in(sys_rst),
-                  .data_valid_in(letter_buffer_valid),
-                  .data_in(letter_buffer_out),
+                  .data_valid_in(letter_buffer_valid), // .data_valid_in(btn[1]),
+                  .data_in(letter_buffer_out), //.data_in(sw[4:0]),
                   .busy_out(ir_busy_out),
                   .signal_out(ir_t_signal_out)); //pmodb6
 
@@ -254,6 +255,7 @@ module top_level
 
   always_ff @(posedge clk_100_passthrough) begin
     last_ir_busy_out <= ir_busy_out;
+    last_enigma_data_valid <= enigma_data_valid;
     if(sys_rst) begin
       ir_letter_count <= 0;
       enigma_letter_count <= 0;
@@ -301,7 +303,7 @@ module top_level
           .s_out(ir_signal_clean));
  
   //infrared decoder
-  logic [31:0] code;
+  logic [5:0] code;
   logic [2:0] error;
   logic [3:0] ir_state;
   logic [2:0] locked_error;
@@ -325,7 +327,10 @@ module top_level
   //code to grab new full code when indicated by module!
   //code to grab and display any errors that you may generate!
   always_ff @(posedge clk_100_passthrough)begin
-    val_to_display <= sys_rst?0:new_code?code:val_to_display;
+    val_to_display <= sys_rst?0:
+      new_code? {ir_letter_count[23:0], 3'b0, code} 
+      // :enigma_data_valid? {val_to_display[31:21], enigma_data_out, val_to_display[15:0]}
+      :val_to_display;
     locked_error <= sys_rst?0:|error?error:locked_error;
   end
 
