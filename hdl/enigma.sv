@@ -40,7 +40,7 @@ module enigma
     logic [25:0][4:0] backwards_rotor_iii_fifo;
     
     //Moving Rotors
-    logic [4:0] rotor_i [25:0];
+    logic [25:0][4:0] rotor_i;
     logic [4:0] rotor_ii [25:0];
     logic [4:0] rotor_iii [25:0];
 
@@ -58,6 +58,8 @@ module enigma
     //Counters
     logic [4:0] first_rotor_counter;
     logic [4:0] second_rotor_counter;
+
+    logic state;
     
     always_ff @(posedge clk_in) begin
         if (rst_in) begin
@@ -68,7 +70,7 @@ module enigma
             data_valid_out_pipeline[3] <= 0;
             data_valid_out_pipeline[4] <= 0;
             data_valid_out_pipeline[5] <= 0;
-            data_valid_out_pipeline[6] <= 0;
+            state <= 0;
         end else if (rotor_valid_in) begin
             ready <= 1'b1;
             first_rotor_counter <= 0;
@@ -79,7 +81,6 @@ module enigma
             data_valid_out_pipeline[3] <= 0;
             data_valid_out_pipeline[4] <= 0;
             data_valid_out_pipeline[5] <= 0;
-            data_valid_out_pipeline[6] <= 0;
             //Set rotor_i to correct rotor
             case (rotor_select[8:6])
             1 : begin 
@@ -161,6 +162,9 @@ module enigma
                     backwards_rotor_iii_fifo <= backwards_rotor_3;
                 end
             endcase
+            state <= 1;
+        end else if(state) begin
+            state <= 0;
             //Shift rotors to correct initial positions
             for (int k=0; k<26; k=k+1) begin
                 //Shifting rotor_i
