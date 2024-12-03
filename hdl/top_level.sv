@@ -78,13 +78,14 @@ module top_level
 
   always_ff @(posedge clk_100_passthrough) begin
     prev_output <= debounced_output;
+
+  end
+  always_ff @(posedge clk_pixel) begin
+    prev_output2 <= debounced_output2;
     prev_output3 <= debounced_output3;
     if(!prev_output3 && debounced_output3) begin
       display_choice <= !display_choice;
     end
-  end
-  always_ff @(posedge clk_pixel) begin
-    prev_output2 <= debounced_output2;
   end
 
   logic [7:0]          red,green,blue;
@@ -112,16 +113,16 @@ module top_level
     
   logic [4:0] enigma_data_out_hold;
   logic [4:0] enigma_data_out_decoded_hold;
-  always_ff @(posedge clk_100_passthrough) begin
-    enigma_data_out_hold <= enigma_data_valid ? enigma_data_out : enigma_data_out_hold;
-    enigma_data_out_decoded_hold <= enigma_data_valid_decoded ? enigma_data_out_decoded : enigma_data_out_decoded_hold;
-  end
+  // always_ff @(posedge clk_pixel) begin
+  //   enigma_data_out_hold <= enigma_data_valid ? enigma_data_out : enigma_data_out_hold;
+  //   enigma_data_out_decoded_hold <= enigma_data_valid_decoded ? enigma_data_out_decoded : enigma_data_out_decoded_hold;
+  // end
   
   enigma_display display_enigma
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .orig_letter_in(enigma_data_out_decoded_hold),
+     .orig_letter_in(sw[4:0]),
      .code_letter_in(enigma_data_out_hold),
      .red_out(red2),
      .green_out(green2),
@@ -131,13 +132,13 @@ module top_level
      .active_draw_hdmi_out(active_draw2)
     );
 
-  always_comb begin
-    red = display_choice ? red2 : red1;
-    green = display_choice ? green2 : green1;
-    blue = display_choice ? blue2 : blue1;
-    hsync = display_choice ? hsync2 : hsync1;
-    vsync = display_choice ? vsync2 : vsync1;
-    active_draw = display_choice ? active_draw2 : active_draw1;
+  always_ff  @(posedge clk_pixel) begin
+    red <= display_choice ? red2 : red1;
+    green <= display_choice ? green2 : green1;
+    blue <= display_choice ? blue2 : blue1;
+    hsync <= display_choice ? hsync2 : hsync1;
+    vsync <= display_choice ? vsync2 : vsync1;
+    active_draw <= display_choice ? active_draw2 : active_draw1;
   end
   
   logic [9:0] tmds_10b [0:2];
@@ -209,12 +210,14 @@ module top_level
   logic rotor_valid_out;
 
   logic enigma_data_valid;
+  logic [1:0] enigma_data_valid_pipe;
   logic enigma_data_valid_decoded;
   logic last_enigma_data_valid;
   logic [4:0] enigma_data_out;
   logic [4:0] enigma_data_out_decoded;
   logic enigma_ready;
   logic enigma_decoder_ready;
+
   // for BRAM addressing
   logic [29:0] enigma_letter_count; //count up to 1000 letters
   logic [29:0] ir_letter_count; //count up to 1000 letters
@@ -252,26 +255,31 @@ module top_level
               .data_valid_out(enigma_data_valid),
               .data_out(enigma_data_out)
               );
+  // assign enigma_data_out = sw[4:0];
+  // assign enigma_data_valid = btn[1];
+
+  assign enigma_data_out_decoded = enigma_data_out;
+  assign enigma_data_valid_decoded = enigma_data_valid;
 
 
-  enigma enigma_decoder(.clk_in(clk_100_passthrough),
-              .rst_in(btn[0]), 
-              .rotor_select(rotor_select_out),
-              .rotor_initial(rotor_initial_out),
-              .data_valid_in(enigma_data_valid),
-              .rotor_valid_in(rotor_valid_out),
-              .data_in(enigma_data_out),
-              .ready(enigma_decoder_ready),
-              .data_valid_out(enigma_data_valid_decoded),
-              .data_out(enigma_data_out_decoded)
-              );
+  // enigma enigma_decoder(.clk_in(clk_100_passthrough),
+  //             .rst_in(btn[0]), 
+  //             .rotor_select(rotor_select_out),
+  //             .rotor_initial(rotor_initial_out),
+  //             .data_valid_in(enigma_data_valid),
+  //             .rotor_valid_in(rotor_valid_out),
+  //             .data_in(enigma_data_out),
+  //             .ready(enigma_decoder_ready),
+  //             .data_valid_out(enigma_data_valid_decoded),
+  //             .data_out(enigma_data_out_decoded)
+  //             );
 
   // IR Transmission from Enigma coded letters
   ir_transmitter #(.MESSAGE_LENGTH(5))
             ir_t (.clk_in(clk_100_passthrough),
                   .rst_in(sys_rst),
-                  .data_valid_in(letter_buffer_valid_pipe[1]), // .data_valid_in(btn[1]),
-                  .data_in(letter_buffer_out), //.data_in(sw[4:0]),
+                  .data_valid_in(letter_buffer_valid_pipe[1]), //.data_valid_in(btn[1]), 
+                  .data_in(letter_buffer_out), //.data_in(sw[4:0]), 
                   .busy_out(ir_busy_out),
                   .signal_out(ir_t_signal_out)); //pmodb6
 
@@ -300,10 +308,35 @@ module top_level
       .regceb(1'b1)    // Port B output register enable
       );
 
+    xilinx_true_dual_port_read_first_2_clock_ram #(
+      .RAM_WIDTH(5),
+      .RAM_DEPTH(1000),
+      .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_display_ram (
+      .clka(clk_100_passthrough),     // Clock 
+      //writing port:
+      .addra(enigma_letter_count),   // Port A address bus,
+      .dina(enigma_data_out),     // Port A RAM input data
+      .wea(enigma_data_valid),       // Port A write enable
+      //reading port:
+      .addrb(enigma_letter_count),   // Port B address bus,
+      .doutb(enigma_data_out_hold),    // Port B RAM output data,
+      .douta(),   // never read from this side
+      .dinb(),     // never write to this side
+      .clkb(clk_pixel),
+      .web(1'b0),       // Port B write enable
+      .ena(1'b1),       // Port A RAM Enable
+      .enb(1'b1),       // Port B RAM Enable,
+      .rsta(1'b0),     // Port A output reset 
+      .rstb(1'b0),     // Port B output reset
+      .regcea(1'b1),   // Port A output register enable
+      .regceb(1'b1)    // Port B output register enable
+      );
+
 
   always_ff @(posedge clk_100_passthrough) begin
     last_ir_busy_out <= ir_busy_out;
     last_enigma_data_valid <= enigma_data_valid;
+    enigma_data_valid_pipe <= {enigma_data_valid_pipe[0], enigma_data_valid};
     letter_buffer_valid_pipe <= {letter_buffer_valid_pipe[0], letter_buffer_valid};
     if(sys_rst) begin
       ir_letter_count <= 0;
@@ -316,8 +349,11 @@ module top_level
       end
       // TODO update letter_buffer_valid
       // update to write in the next letter address every time a letter is output from the enigma module
-      if (enigma_data_valid && ! last_enigma_data_valid) begin
-        letter_buffer_valid <= 1; // only want letter buffer valid once for the ir transmitter
+      if (enigma_data_valid) begin
+        letter_buffer_valid <= 1; //TODO see if can combine this with the data_valid pipeline
+      end
+      if (enigma_data_valid_pipe[1]) begin
+        // letter_buffer_valid <= 1; 
         enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
       end
       else if(!ir_busy_out) begin
