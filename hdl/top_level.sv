@@ -229,7 +229,7 @@ module top_level
               .rst_in(btn[0]), 
               .rotor_select(rotor_select_out),
               .rotor_initial(rotor_initial_out),
-              .data_valid_in(letter_buffer_valid),
+              .data_valid_in(enigma_data_valid),
               .rotor_valid_in(rotor_valid_out),
               .data_in(enigma_data_out),
               .ready(enigma_decoder_ready),
