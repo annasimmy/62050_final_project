@@ -66,7 +66,7 @@ module top_level
                     .dirty_in(btn[2]),
                     .clean_out(debounced_output2));
   logic debounced_output3;
-  debouncer btn2_db(.clk_in(clk_pixel),
+  debouncer btn3_db(.clk_in(clk_pixel),
                     .rst_in(btn[0]),
                     .dirty_in(btn[3]),
                     .clean_out(debounced_output3));
@@ -114,8 +114,8 @@ module top_level
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .orig_letter_in(sw[4:0]),
-     .code_letter_in(sw[9:5]),
+     .orig_letter_in(enigma_data_out_decoded),
+     .code_letter_in(enigma_data_out),
      .red_out(red2),
      .green_out(green2),
      .blue_out(blue2),
