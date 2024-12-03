@@ -60,155 +60,155 @@ module enigma
     logic [4:0] second_rotor_counter;
     
     always_ff @(posedge clk_in) begin
-	if (rst_in) begin
-	    ready <= 1'b1;
-	    data_valid_out_pipeline[0] <= 0;
-	    data_valid_out_pipeline[1] <= 0;
-	    data_valid_out_pipeline[2] <= 0;
-	    data_valid_out_pipeline[3] <= 0;
-    	    data_valid_out_pipeline[4] <= 0;
-	    data_valid_out_pipeline[5] <= 0;
-	    data_valid_out_pipeline[6] <= 0;
-	end else if (rotor_valid_in) begin
-	    ready <= 1'b1;
-	    first_rotor_counter <= 0;
-	    second_rotor_counter <= 0;
-	    data_valid_out_pipeline[0] <= 0;
+        if (rst_in) begin
+            ready <= 1'b1;
+            data_valid_out_pipeline[0] <= 0;
             data_valid_out_pipeline[1] <= 0;
             data_valid_out_pipeline[2] <= 0;
             data_valid_out_pipeline[3] <= 0;
             data_valid_out_pipeline[4] <= 0;
             data_valid_out_pipeline[5] <= 0;
             data_valid_out_pipeline[6] <= 0;
-	    //Set rotor_i to correct rotor
-	    case (rotor_select[8:6])
-		1 : begin 
-			rotor_i_fifo <= rotor_1;
-			backwards_rotor_i_fifo <= backwards_rotor_1;
-		    end
-		2 : begin
-			rotor_i_fifo <= rotor_2;
-			backwards_rotor_i_fifo <= backwards_rotor_2;
-		    end
-		3 : begin 
-			rotor_i_fifo <= rotor_3;
-			backwards_rotor_i_fifo <= backwards_rotor_3;
-		    end
-		4 : begin
-			rotor_i_fifo <= rotor_4;
-			backwards_rotor_i_fifo <= backwards_rotor_4;
-		    end
-		5 : begin
-			rotor_i_fifo <= rotor_5;
-			backwards_rotor_i_fifo <= backwards_rotor_5;
-		    end
-		default : begin
-				rotor_i_fifo <= rotor_1;
-				backwards_rotor_i_fifo <= backwards_rotor_1;
-			  end
-	    endcase
-	    //Set rotor_ii to correct rotor
-	    case (rotor_select[5:3])
-                1 : begin
-			rotor_ii_fifo <= rotor_1;
-			backwards_rotor_ii_fifo <= backwards_rotor_1;
-		    end
-                2 : begin
-			rotor_ii_fifo <= rotor_2;
-			backwards_rotor_ii_fifo <= backwards_rotor_2;
-		    end
-                3 : begin
-			rotor_ii_fifo <= rotor_3;
-			backwards_rotor_ii_fifo <= backwards_rotor_3;
-		    end
-                4 : begin
-			rotor_ii_fifo <= rotor_4;
-			backwards_rotor_ii_fifo <= backwards_rotor_4;
-		    end
-                5 : begin
-			rotor_ii_fifo <= rotor_5;
-			backwards_rotor_ii_fifo <= backwards_rotor_5;
-		    end
-                default : begin
-				rotor_ii_fifo <= rotor_2;
-				backwards_rotor_ii_fifo <= backwards_rotor_2;
-			  end
+        end else if (rotor_valid_in) begin
+            ready <= 1'b1;
+            first_rotor_counter <= 0;
+            second_rotor_counter <= 0;
+            data_valid_out_pipeline[0] <= 0;
+            data_valid_out_pipeline[1] <= 0;
+            data_valid_out_pipeline[2] <= 0;
+            data_valid_out_pipeline[3] <= 0;
+            data_valid_out_pipeline[4] <= 0;
+            data_valid_out_pipeline[5] <= 0;
+            data_valid_out_pipeline[6] <= 0;
+            //Set rotor_i to correct rotor
+            case (rotor_select[8:6])
+            1 : begin 
+                rotor_i_fifo <= rotor_1;
+                backwards_rotor_i_fifo <= backwards_rotor_1;
+                end
+            2 : begin
+                rotor_i_fifo <= rotor_2;
+                backwards_rotor_i_fifo <= backwards_rotor_2;
+                end
+            3 : begin 
+                rotor_i_fifo <= rotor_3;
+                backwards_rotor_i_fifo <= backwards_rotor_3;
+                end
+            4 : begin
+                rotor_i_fifo <= rotor_4;
+                backwards_rotor_i_fifo <= backwards_rotor_4;
+                end
+            5 : begin
+                rotor_i_fifo <= rotor_5;
+                backwards_rotor_i_fifo <= backwards_rotor_5;
+                end
+            default : begin
+                rotor_i_fifo <= rotor_1;
+                backwards_rotor_i_fifo <= backwards_rotor_1;
+                end
             endcase
-	    //Set rotor_iii to correct rotor
-	    case (rotor_select[2:0])
+            //Set rotor_ii to correct rotor
+            case (rotor_select[5:3])
                 1 : begin
-			rotor_iii_fifo <= rotor_1;
-			backwards_rotor_iii_fifo <= backwards_rotor_1;
-		    end
+                    rotor_ii_fifo <= rotor_1;
+                    backwards_rotor_ii_fifo <= backwards_rotor_1;
+                end
                 2 : begin
-			rotor_iii_fifo <= rotor_2;
-		        backwards_rotor_iii_fifo <= backwards_rotor_2;
-		    end
+                    rotor_ii_fifo <= rotor_2;
+                    backwards_rotor_ii_fifo <= backwards_rotor_2;
+                end
                 3 : begin
-			rotor_iii_fifo <= rotor_3;
-			backwards_rotor_iii_fifo <= backwards_rotor_3;
-		    end
+                    rotor_ii_fifo <= rotor_3;
+                    backwards_rotor_ii_fifo <= backwards_rotor_3;
+                end
                 4 : begin
-			rotor_iii_fifo <= rotor_4;
-			backwards_rotor_iii_fifo <= backwards_rotor_4;
-		    end
+                    rotor_ii_fifo <= rotor_4;
+                    backwards_rotor_ii_fifo <= backwards_rotor_4;
+                end
                 5 : begin
-			rotor_iii_fifo <= rotor_5;
-			backwards_rotor_iii_fifo <= backwards_rotor_5;
-		    end
+                    rotor_ii_fifo <= rotor_5;
+                    backwards_rotor_ii_fifo <= backwards_rotor_5;
+                end
                 default : begin
-				rotor_iii_fifo <= rotor_3;
-			  	backwards_rotor_iii_fifo <= backwards_rotor_3;
-			  end
+                    rotor_ii_fifo <= rotor_2;
+                    backwards_rotor_ii_fifo <= backwards_rotor_2;
+                end
             endcase
-	    //Shift rotors to correct initial positions
-	    for (int k=0; k<26; k=k+1) begin
-		//Shifting rotor_i
-		if (rotor_initial[14:10]+k < 26) begin
-		    rotor_i[k] <= rotor_i_fifo[rotor_initial[14:10]+k];
-		end else begin
-		    rotor_i[k] <= rotor_i_fifo[rotor_initial[14:10]+k-26];
-		end 
-		//Shifting rotor_ii
-		if (rotor_initial[9:5]+k < 26) begin
+            //Set rotor_iii to correct rotor
+            case (rotor_select[2:0])
+                1 : begin
+                    rotor_iii_fifo <= rotor_1;
+                    backwards_rotor_iii_fifo <= backwards_rotor_1;
+                end
+                2 : begin
+                    rotor_iii_fifo <= rotor_2;
+                    backwards_rotor_iii_fifo <= backwards_rotor_2;
+                end
+                3 : begin
+                    rotor_iii_fifo <= rotor_3;
+                    backwards_rotor_iii_fifo <= backwards_rotor_3;
+                end
+                4 : begin
+                    rotor_iii_fifo <= rotor_4;
+                    backwards_rotor_iii_fifo <= backwards_rotor_4;
+                end
+                5 : begin
+                    rotor_iii_fifo <= rotor_5;
+                    backwards_rotor_iii_fifo <= backwards_rotor_5;
+                end
+                default : begin
+                    rotor_iii_fifo <= rotor_3;
+                    backwards_rotor_iii_fifo <= backwards_rotor_3;
+                end
+            endcase
+            //Shift rotors to correct initial positions
+            for (int k=0; k<26; k=k+1) begin
+                //Shifting rotor_i
+                if (rotor_initial[14:10]+k < 26) begin
+                    rotor_i[k] <= rotor_i_fifo[rotor_initial[14:10]+k];
+                end else begin
+                    rotor_i[k] <= rotor_i_fifo[rotor_initial[14:10]+k-26];
+                end 
+                //Shifting rotor_ii
+                if (rotor_initial[9:5]+k < 26) begin
                     rotor_ii[k] <= rotor_ii_fifo[rotor_initial[9:5]+k];
                 end else begin
                     rotor_ii[k] <= rotor_ii_fifo[rotor_initial[9:5]+k-26];
                 end 
-		//Shifting rotor_iii
-		if (rotor_initial[4:0]+k < 26) begin
+                //Shifting rotor_iii
+                if (rotor_initial[4:0]+k < 26) begin
                     rotor_iii[k] <= rotor_iii_fifo[rotor_initial[4:0]+k];
                 end else begin
                     rotor_iii[k] <= rotor_iii_fifo[rotor_initial[4:0]+k-26];
                 end 
-		//Shifting backwards_rotor_i
-		if (backwards_rotor_i_fifo[k]+rotor_initial[14:10] < 27) begin
-		    backwards_rotor_i[k] <= backwards_rotor_i_fifo[k]+rotor_initial[14:10];
-		end else begin
-		    backwards_rotor_i[k] <= backwards_rotor_i_fifo[k]+rotor_initial[14:10]-26;
-		end
-		//Shifting backwards_rotor_ii
+                //Shifting backwards_rotor_i
+                if (backwards_rotor_i_fifo[k]+rotor_initial[14:10] < 27) begin
+                    backwards_rotor_i[k] <= backwards_rotor_i_fifo[k]+rotor_initial[14:10];
+                end else begin
+                    backwards_rotor_i[k] <= backwards_rotor_i_fifo[k]+rotor_initial[14:10]-26;
+                end
+                //Shifting backwards_rotor_ii
                 if (backwards_rotor_ii_fifo[k]+rotor_initial[9:5] < 27) begin
                     backwards_rotor_ii[k] <= backwards_rotor_ii_fifo[k]+rotor_initial[9:5];
                 end else begin
                     backwards_rotor_ii[k] <= backwards_rotor_ii_fifo[k]+rotor_initial[9:5]-26;
                 end 
-		//Shifting backwards_rotor_iii
+                //Shifting backwards_rotor_iii
                 if (backwards_rotor_iii_fifo[k]+rotor_initial[4:0] < 27) begin
                     backwards_rotor_iii[k] <= backwards_rotor_iii_fifo[k]+rotor_initial[4:0];
                 end else begin
                     backwards_rotor_iii[k] <= backwards_rotor_iii_fifo[k]+rotor_initial[4:0]-26;
                 end 
-	    end
-	end else if (data_valid_in && ready) begin
-	//Data Movement
-	    ready <= 0;
-	    data_pipeline[0] <= rotor_i[26-data_in];
-	    data_valid_out_pipeline[0] <= 1'b1;
-	end else if (data_valid_out_pipeline[5]) begin
-	//Rotor movement
+            end
+        end else if (data_valid_in && ready) begin
+        //Data Movement
+            ready <= 0;
+            data_pipeline[0] <= rotor_i[26-data_in];
+            data_valid_out_pipeline[0] <= 1'b1;
+        end else if (data_valid_out_pipeline[5]) begin
+        //Rotor movement
             //Counters
-	    data_valid_out_pipeline[0] <= 0;
+            data_valid_out_pipeline[0] <= 0;
             first_rotor_counter <= (first_rotor_counter == 25)? 0: first_rotor_counter + 1;
             second_rotor_counter <= ((second_rotor_counter == 25) && (first_rotor_counter == 25))? 0 : (first_rotor_counter == 25)? second_rotor_counter + 1: second_rotor_counter;
             //First Rotor movement
@@ -251,8 +251,8 @@ module enigma
                     end 
                 end 
             end     
-	    ready <= 1;
-	end else begin
+            ready <= 1;
+        end else begin
             data_valid_out_pipeline[0] <= 0;
         end
         //Data Movement continued

@@ -110,12 +110,19 @@ module top_level
      .active_draw_hdmi_out(active_draw1)
     );
     
+  logic [4:0] enigma_data_out_hold;
+  logic [4:0] enigma_data_out_decoded_hold;
+  always_ff @(posedge clk_100_passthrough) begin
+    enigma_data_out_hold <= enigma_data_valid ? enigma_data_out : enigma_data_out_hold;
+    enigma_data_out_decoded_hold <= enigma_data_valid_decoded ? enigma_data_out_decoded : enigma_data_out_decoded_hold;
+  end
+  
   enigma_display display_enigma
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .orig_letter_in(enigma_data_out_decoded),
-     .code_letter_in(enigma_data_out),
+     .orig_letter_in(enigma_data_out_decoded_hold),
+     .code_letter_in(enigma_data_out_hold),
      .red_out(red2),
      .green_out(green2),
      .blue_out(blue2),
