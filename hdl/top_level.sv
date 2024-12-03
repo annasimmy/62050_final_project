@@ -86,8 +86,8 @@ module top_level
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .data_valid_in(debounced_output && !prev_output &&sw[15:14]),
-     .data_in(sw[4:0]),
+     .data_valid_in(enigma_data_valid_decoded),
+     .data_in(enigma_data_out_decoded),
      .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
      .red_out(red),
      .green_out(green),
@@ -180,13 +180,18 @@ module top_level
   logic rotor_valid_out;
 
   logic enigma_data_valid;
+  logic enigma_data_valid_decoded;
   logic last_enigma_data_valid;
   logic [4:0] enigma_data_out;
+  logic [4:0] enigma_data_out_decoded;
+  logic enigma_ready;
+  logic enigma_decoder_ready;
   // for BRAM addressing
   logic [29:0] enigma_letter_count; //count up to 1000 letters
   logic [29:0] ir_letter_count; //count up to 1000 letters
   logic [4:0] letter_buffer_out;
   logic letter_buffer_valid;
+  logic [1:0] letter_buffer_valid_pipe;
   logic ir_busy_out;
   logic last_ir_busy_out;
   logic ir_t_signal_out;
@@ -207,22 +212,36 @@ module top_level
 
 
   // Enigma Initialization
-  enigma enig(.clk_in(clk_100_passthrough),
-              .rst_in(btn[0]), // TODO do we want a separate reset?
+  enigma enigma_encoder(.clk_in(clk_100_passthrough),
+              .rst_in(btn[0]), 
               .rotor_select(rotor_select_out),
               .rotor_initial(rotor_initial_out),
               .data_valid_in(letter_valid_out),
               .rotor_valid_in(rotor_valid_out),
               .data_in(char_out),
+              .ready(enigma_ready),
               .data_valid_out(enigma_data_valid),
               .data_out(enigma_data_out)
+              );
+
+
+  enigma enigma_decoder(.clk_in(clk_100_passthrough),
+              .rst_in(btn[0]), 
+              .rotor_select(rotor_select_out),
+              .rotor_initial(rotor_initial_out),
+              .data_valid_in(letter_buffer_valid),
+              .rotor_valid_in(rotor_valid_out),
+              .data_in(enigma_data_out),
+              .ready(enigma_decoder_ready),
+              .data_valid_out(enigma_data_valid_decoded),
+              .data_out(enigma_data_out_decoded)
               );
 
   // IR Transmission from Enigma coded letters
   ir_transmitter #(.MESSAGE_LENGTH(5))
             ir_t (.clk_in(clk_100_passthrough),
                   .rst_in(sys_rst),
-                  .data_valid_in(letter_buffer_valid), // .data_valid_in(btn[1]),
+                  .data_valid_in(letter_buffer_valid_pipe[1]), // .data_valid_in(btn[1]),
                   .data_in(letter_buffer_out), //.data_in(sw[4:0]),
                   .busy_out(ir_busy_out),
                   .signal_out(ir_t_signal_out)); //pmodb6
@@ -256,13 +275,14 @@ module top_level
   always_ff @(posedge clk_100_passthrough) begin
     last_ir_busy_out <= ir_busy_out;
     last_enigma_data_valid <= enigma_data_valid;
+    letter_buffer_valid_pipe <= {letter_buffer_valid_pipe[0], letter_buffer_valid};
     if(sys_rst) begin
       ir_letter_count <= 0;
       enigma_letter_count <= 0;
     end
     else begin
       // if one letter has been transmitted, move on to read the next letter
-      if (ir_busy_out && ! last_ir_busy_out) begin
+      if (!ir_busy_out && last_ir_busy_out) begin
         ir_letter_count <= ir_letter_count == 999 ? 0 : ir_letter_count + 1;
       end
       // TODO update letter_buffer_valid
@@ -303,7 +323,7 @@ module top_level
           .s_out(ir_signal_clean));
  
   //infrared decoder
-  logic [5:0] code;
+  logic [4:0] code;
   logic [2:0] error;
   logic [3:0] ir_state;
   logic [2:0] locked_error;
