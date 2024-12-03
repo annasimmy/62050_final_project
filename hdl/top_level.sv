@@ -65,21 +65,34 @@ module top_level
                     .rst_in(btn[0]),
                     .dirty_in(btn[2]),
                     .clean_out(debounced_output2));
+  logic debounced_output3;
+  debouncer btn2_db(.clk_in(clk_pixel),
+                    .rst_in(btn[0]),
+                    .dirty_in(btn[3]),
+                    .clean_out(debounced_output3));
 
   logic prev_output;
   logic prev_output2;
+  logic prev_output3;
+  logic display_choice;
 
   always_ff @(posedge clk_100_passthrough) begin
     prev_output <= debounced_output;
+    prev_output3 <= debounced_output3;
+    if(!prev_output3 && debounced_output3) begin
+      display_choice <= !display_choice;
+    end
   end
   always_ff @(posedge clk_pixel) begin
     prev_output2 <= debounced_output2;
   end
 
   logic [7:0]          red,green,blue;
-  // logic [7:0]          red2,green2,blue2;
+  logic [7:0]          red1,green1,blue1;
+  logic [7:0]          red2,green2,blue2;
   
-  // logic           hsync2,vsync2,active_draw2;
+  logic           hsync1,vsync1,active_draw1;
+  logic           hsync2,vsync2,active_draw2;
   logic           hsync,vsync,active_draw;
 
   text_display display_text
@@ -89,27 +102,36 @@ module top_level
      .data_valid_in(enigma_data_valid_decoded),
      .data_in(enigma_data_out_decoded),
      .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
-     .red_out(red),
-     .green_out(green),
-     .blue_out(blue),
-     .hsync_hdmi_out(hsync),
-     .vsync_hdmi_out(vsync),
-     .active_draw_hdmi_out(active_draw)
+     .red_out(red1),
+     .green_out(green1),
+     .blue_out(blue1),
+     .hsync_hdmi_out(hsync1),
+     .vsync_hdmi_out(vsync1),
+     .active_draw_hdmi_out(active_draw1)
     );
     
-  // enigma_display display_enigma
-  //   (.clk_in(clk_100_passthrough),
-  //    .clk_pixel(clk_pixel),
-  //    .sys_rst_pixel(btn[0]),
-  //    .orig_letter_in(sw[4:0]),
-  //    .code_letter_in(sw[9:5]),
-  //    .red_out(red2),
-  //    .green_out(green2),
-  //    .blue_out(blue2),
-  //    .hsync_hdmi_out(hsync2),
-  //    .vsync_hdmi_out(vsync2),
-  //    .active_draw_hdmi_out(active_draw2)
-  //   );
+  enigma_display display_enigma
+    (.clk_in(clk_100_passthrough),
+     .clk_pixel(clk_pixel),
+     .sys_rst_pixel(btn[0]),
+     .orig_letter_in(sw[4:0]),
+     .code_letter_in(sw[9:5]),
+     .red_out(red2),
+     .green_out(green2),
+     .blue_out(blue2),
+     .hsync_hdmi_out(hsync2),
+     .vsync_hdmi_out(vsync2),
+     .active_draw_hdmi_out(active_draw2)
+    );
+
+  always_comb begin
+    red = display_choice ? red2 : red1;
+    green = display_choice ? green2 : green1;
+    blue = display_choice ? blue2 : blue1;
+    hsync = display_choice ? hsync2 : hsync1;
+    vsync = display_choice ? vsync2 : vsync1;
+    active_draw = display_choice ? active_draw2 : active_draw1;
+  end
   
   logic [9:0] tmds_10b [0:2];
   logic tmds_signal [2:0];
