@@ -56,8 +56,6 @@ module enigma_display (
     logic [14:0] y_dist;
     logic [14:0] dist_sq;
 
-    logic [7:0] red, green, blue;
-
     always_ff @(posedge clk_pixel)begin
         hcount_pipe[0] <= hcount_hdmi;
         vcount_pipe[0] <= vcount_hdmi;
