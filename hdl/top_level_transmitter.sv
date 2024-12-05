@@ -195,31 +195,12 @@ module top_level
   OBUFDS OBUFDS_clock(.I(clk_pixel), .O(hdmi_clk_p), .OB(hdmi_clk_n));
 
 
-// MESSAGE SENDING: Enigma encoding and 
+// Initializing rotors and original letters
   logic [8:0] rotor_select_out;
   logic [14:0] rotor_initial_out;
   logic [4:0] char_out;
   logic letter_valid_out;
   logic rotor_valid_out;
-
-  logic enigma_data_valid;
-  logic enigma_data_valid_decoded;
-  logic last_enigma_data_valid;
-  logic [4:0] enigma_data_out;
-  logic [4:0] enigma_data_out_decoded;
-  logic enigma_ready;
-  logic enigma_decoder_ready;
-  // for BRAM addressing
-  logic [29:0] enigma_letter_count; //count up to 1000 letters
-  logic [29:0] ir_letter_count; //count up to 1000 letters
-  logic [4:0] letter_buffer_out;
-  logic letter_buffer_valid;
-  logic [1:0] letter_buffer_valid_pipe;
-  logic ir_busy_out;
-  logic last_ir_busy_out;
-  logic ir_t_signal_out;
-  assign pmodb_o[2] = ir_t_signal_out;
-
 
   data_module my_data (
     .clk_in(clk_100_passthrough),
@@ -234,6 +215,11 @@ module top_level
 
 
   // Enigma Initialization
+  logic enigma_data_valid;
+  logic last_enigma_data_valid;
+  logic [4:0] enigma_data_out;
+  logic enigma_ready;
+
   enigma enigma_encoder(.clk_in(clk_100_passthrough),
               .rst_in(btn[0]), 
               .rotor_select(rotor_select_out),
@@ -248,6 +234,11 @@ module top_level
 
 
   // IR Transmission from Enigma coded letters
+  logic ir_busy_out;
+  logic last_ir_busy_out;
+  logic ir_t_signal_out;
+  assign pmodb_o[2] = ir_t_signal_out;
+
   ir_transmitter #(.MESSAGE_LENGTH(5))
             ir_t (.clk_in(clk_100_passthrough),
                   .rst_in(sys_rst),
@@ -257,7 +248,13 @@ module top_level
                   .signal_out(ir_t_signal_out)); //pmodb6
 
 
-  // using BRAM - could also use AXIS FIFO if this doesn't work
+  // BRAM from engima encoding to IR transmitting
+  logic [10:0] enigma_letter_count; //count up to 1000 letters
+  logic [10:0] ir_letter_count; //count up to 1000 letters
+  logic [4:0] letter_buffer_out;
+  logic letter_buffer_valid;
+  logic [1:0] letter_buffer_valid_pipe;
+
   xilinx_true_dual_port_read_first_1_clock_ram #(
       .RAM_WIDTH(5),
       .RAM_DEPTH(1000),
@@ -319,7 +316,6 @@ module top_level
       if (debounced_output && ! prev_output) begin
         display_letter_count <= display_letter_count == 999 ? 0 : display_letter_count + 1;
       end
-
     end
   end
 
@@ -342,14 +338,12 @@ module top_level
         letter_buffer_valid <= 1; // only want letter buffer valid once for the ir transmitter
         enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
       end
-      else if(!ir_busy_out) begin
+      else if(!ir_busy_out) begin // otherwise hold it until IR not busy
         letter_buffer_valid <= 0;
       end
     end
     
   end
-
-  
 
 
 
