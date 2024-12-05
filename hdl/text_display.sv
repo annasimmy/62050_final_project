@@ -19,15 +19,25 @@ module text_display (
     logic [10:0] counter;
     logic [4:0] hold_data_in;
     logic [8:0] scroll_lines;
+    logic [11:0] reset_state;
 
     always_ff @(posedge clk_in) begin
         if(sys_rst_pixel) begin
             counter <= 0;
-        end else begin
+            reset_state <= 1;
+        end else if(reset_state != 0) begin
+            if(reset_state == 1024) begin
+                reset_state <= 0;
+            end else begin
+                reset_state <= reset_state + 1;
+            end
+            hold_data_in <= 0;
+            counter <= reset_state;
+        end begin
             if(data_valid_in) begin
                 hold_data_in <= data_in;
                 if(counter == 1024) begin
-                    counter <= 1;
+                    counter <= 0;
                 end else begin
                     counter <= counter + 1;
                 end

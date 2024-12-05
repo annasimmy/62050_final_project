@@ -109,20 +109,6 @@ module top_level_receiver
      .vsync_hdmi_out(vsync1),
      .active_draw_hdmi_out(active_draw1)
     );
-    
-  // enigma_display display_enigma
-  //   (.clk_in(clk_100_passthrough),
-  //    .clk_pixel(clk_pixel),
-  //    .sys_rst_pixel(btn[0]),
-  //    .orig_letter_in(sw[4:0]),
-  //    .code_letter_in(enigma_data_out),
-  //    .red_out(red2),
-  //    .green_out(green2),
-  //    .blue_out(blue2),
-  //    .hsync_hdmi_out(hsync2),
-  //    .vsync_hdmi_out(vsync2),
-  //    .active_draw_hdmi_out(active_draw2)
-  //   );
 
   always_comb begin
     red = red1; //display_choice ? red2 : red1;
@@ -206,7 +192,8 @@ module top_level_receiver
   data_module my_data (
     .clk_in(clk_100_passthrough),
     .rst_in(btn[0]),
-    .data_valid_in(btn[1]),
+    .letter_valid_in(btn[1]),
+    .rotor_valid_in(btn[3]),
     .sw(sw),
     .rotor_valid_out(rotor_valid_out),
     .letter_valid_out(),
@@ -235,15 +222,14 @@ module top_level_receiver
 
 
   // BRAM: from enigma decoding to text display
-  logic [10:0] enigma_letter_count; //count up to 1000 letters
-  logic [10:0] display_letter_count;
+  logic [10:0] enigma_letter_count; //count up to 1024 letters
   logic [4:0] letter_buffer_out;
   logic letter_buffer_valid;
   logic [1:0] letter_buffer_valid_pipe;
 
   xilinx_true_dual_port_read_first_2_clock_ram #(
       .RAM_WIDTH(5),
-      .RAM_DEPTH(1000),
+      .RAM_DEPTH(1024),
       .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_ram (
       .clka(clk_100_passthrough),     // Clock 
       //writing port:
@@ -251,10 +237,10 @@ module top_level_receiver
       .dina(enigma_data_out),     // Port A RAM input data
       .wea(enigma_data_valid),       // Port A write enable
       //reading port:
-      .addrb(display_letter_count),   // Port B address bus,
+      .addrb(enigma_letter_count - 1),   // Port B address bus,
       .doutb(letter_buffer_out),    // Port B RAM output data,
       .douta(),   // never read from this side
-      .clkb(clk_pixel),
+      .clkb(clk_100_passthrough),
       .dinb(),     // never write to this side
       .web(1'b0),       // Port B write enable
       .ena(1'b1),       // Port A RAM Enable
@@ -265,39 +251,25 @@ module top_level_receiver
       .regceb(1'b1)    // Port B output register enable
       );
 
-
-    // assign display_letter_count = enigma_letter_count -1;
-    // TODO make this dependent on clk_pixel
-    always_ff @(posedge clk_pixel) begin
-        if(sys_rst) begin
-            display_letter_count <= 0;
-        end
-
-        else begin
-            display_letter_count = enigma_letter_count -1;
-            if (enigma_data_valid && ! last_enigma_data_valid) begin
-                letter_buffer_valid <= 1; // want high for one cycle
-            end
-            else begin
-                letter_buffer_valid <= 0; 
-            end
-        end
-
-    end
+  logic enigma_valid_pipe;
+  logic enigma_valid_pipe2;
+  logic enigma_valid_pipe3;
 
   always_ff @(posedge clk_100_passthrough) begin
     last_enigma_data_valid <= enigma_data_valid;
     letter_buffer_valid_pipe <= {letter_buffer_valid_pipe[0], letter_buffer_valid};
+    enigma_valid_pipe <= enigma_data_valid && ! last_enigma_data_valid;
+    enigma_valid_pipe3 <= enigma_valid_pipe;
     if(sys_rst) begin
-    //   ir_letter_count <= 0;
       enigma_letter_count <= 0;
-    end
-    else begin
-      if (enigma_data_valid && ! last_enigma_data_valid) begin
-        enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
+    end else begin
+      if (enigma_valid_pipe3) begin
+        enigma_letter_count <= enigma_letter_count == 1023 ? 0 : enigma_letter_count + 1;
+        letter_buffer_valid <= 1; // want high for one cycle
+      end else begin
+        letter_buffer_valid <= 0; 
       end
     end
-    
   end
 
 
@@ -341,10 +313,11 @@ module top_level_receiver
   assign ss0_c = ss_c; //control upper four digit's cathodes
   assign ss1_c = ss_c; //same as above but for lower four digits
 
-    always_ff @(posedge clk_100_passthrough)begin
-    val_to_display <= sys_rst?0: ir_valid_out ?
-      {28'b0, ir_letter_out} : val_to_display;
-    end
+  logic [4:0] enigma_data_hold;
+  always_ff @(posedge clk_100_passthrough)begin
+    enigma_data_hold <= enigma_data_valid ? enigma_data_out : enigma_data_hold;
+    val_to_display <= sys_rst ? 0 : (ir_valid_out ? {11'b0, enigma_data_hold, 11'b0, ir_letter_out} : val_to_display);
+  end
   
 
 
