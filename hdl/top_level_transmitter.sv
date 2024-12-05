@@ -250,15 +250,15 @@ module top_level_transmitter
 
 
   // BRAM from engima encoding to IR transmitting
-  logic [10:0] enigma_letter_count; //count up to 1000 letters
-  logic [10:0] ir_letter_count; //count up to 1000 letters
+  logic [10:0] enigma_letter_count; //count up to 1024 letters
+  logic [10:0] ir_letter_count; //count up to 1024 letters
   logic [4:0] letter_buffer_out;
   logic letter_buffer_valid;
   logic [1:0] letter_buffer_valid_pipe;
 
   xilinx_true_dual_port_read_first_1_clock_ram #(
       .RAM_WIDTH(5),
-      .RAM_DEPTH(1000),
+      .RAM_DEPTH(1024),
       .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_ram (
       .clka(clk_100_passthrough),     // Clock 
       //writing port:
@@ -286,7 +286,7 @@ module top_level_transmitter
    // Display BRAM 
   xilinx_true_dual_port_read_first_2_clock_ram #(
       .RAM_WIDTH(5),
-      .RAM_DEPTH(1000),
+      .RAM_DEPTH(1024),
       .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_display_ram (
       .clka(clk_100_passthrough),     // Clock 
       //writing port:
