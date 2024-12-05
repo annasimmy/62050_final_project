@@ -56,7 +56,7 @@ module top_level
     .reset(0));
   
   logic debounced_output;
-  debouncer btn1_db(.clk_in(clk_100_passthrough),
+  debouncer btn1_db(.clk_in(clk_pixel),
                     .rst_in(btn[0]),
                     .dirty_in(btn[1]),
                     .clean_out(debounced_output));
@@ -76,16 +76,17 @@ module top_level
   logic prev_output3;
   logic display_choice;
 
-  always_ff @(posedge clk_100_passthrough) begin
-    prev_output <= debounced_output;
-    prev_output3 <= debounced_output3;
-    if(!prev_output3 && debounced_output3) begin
-      display_choice <= !display_choice;
-    end
-  end
   always_ff @(posedge clk_pixel) begin
+    prev_output <= debounced_output;
     prev_output2 <= debounced_output2;
+    prev_output3 <= debounced_output3;
+    // if(!prev_output3 && debounced_output3) begin
+    //   display_choice <= !display_choice;
+    // end
   end
+  // always_ff @(posedge clk_pixel) begin
+  //   prev_output2 <= debounced_output2;
+  // end
 
   logic [7:0]          red,green,blue;
   logic [7:0]          red1,green1,blue1;
@@ -310,15 +311,17 @@ module top_level
       );
 
   
-  // always_ff @(posedge clk_pixel) begin
-  //   if(sys_rst) begin
-  //     display_letter_count <= 0;
-  //   end
-  //   else begin
-  //     if (enigma_data_valid && ! last_enigma_data_valid)
+  always_ff @(posedge clk_pixel) begin
+    if(sys_rst) begin
+      display_letter_count <= 0;
+    end
+    else begin
+      if (debounced_output && ! prev_output) begin
+        display_letter_count <= display_letter_count == 999 ? 0 : display_letter_count + 1;
+      end
 
-  //   end
-  // end
+    end
+  end
 
 
   always_ff @(posedge clk_100_passthrough) begin
@@ -336,7 +339,6 @@ module top_level
       end
       // update to write in the next letter address every time a letter is output from the enigma module
       if (enigma_data_valid && ! last_enigma_data_valid) begin
-        display_letter_count <= display_letter_count == 999 ? 0 : display_letter_count + 1;
         letter_buffer_valid <= 1; // only want letter buffer valid once for the ir transmitter
         enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
       end
