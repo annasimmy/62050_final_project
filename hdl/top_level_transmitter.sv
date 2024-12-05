@@ -24,10 +24,10 @@ module top_level
 
   assign rgb0 = 0;
   assign rgb1 = 0;
-  // assign ss0_an = 0;
-  // assign ss1_an = 0;
-  // assign ss0_c = 0;
-  // assign ss1_c = 0;
+  assign ss0_an = 0;
+  assign ss1_an = 0;
+  assign ss0_c = 0;
+  assign ss1_c = 0;
   
   // Clock and Reset Signals
   logic          clk_camera;
@@ -74,7 +74,7 @@ module top_level
   logic prev_output;
   logic prev_output2;
   logic prev_output3;
-  logic display_choice;
+  // logic display_choice;
 
   always_ff @(posedge clk_pixel) begin
     prev_output <= debounced_output;
@@ -313,6 +313,7 @@ module top_level
       display_letter_count <= 0;
     end
     else begin
+      // increment if the button is pressed
       if (debounced_output && ! prev_output) begin
         display_letter_count <= display_letter_count == 999 ? 0 : display_letter_count + 1;
       end
