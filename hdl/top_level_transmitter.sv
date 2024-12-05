@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module top_level
+module top_level_transmitter
   (
    input wire          clk_100mhz,
    output logic [15:0] led,
@@ -24,10 +24,10 @@ module top_level
 
   assign rgb0 = 0;
   assign rgb1 = 0;
-  assign ss0_an = 0;
-  assign ss1_an = 0;
-  assign ss0_c = 0;
-  assign ss1_c = 0;
+  // assign ss0_an = 0;
+  // assign ss1_an = 0;
+  // assign ss0_c = 0;
+  // assign ss1_c = 0;
   
   // Clock and Reset Signals
   logic          clk_camera;
@@ -205,7 +205,8 @@ module top_level
   data_module my_data (
     .clk_in(clk_100_passthrough),
     .rst_in(btn[0]),
-    .data_valid_in(btn[1]),
+    .letter_valid_in(btn[1]),
+    .rotor_valid_in(btn[3]),
     .sw(sw),
     .rotor_valid_out(rotor_valid_out),
     .letter_valid_out(letter_valid_out),
@@ -293,7 +294,7 @@ module top_level
       .dina(enigma_data_out),     // Port A RAM input data
       .wea(enigma_data_valid),       // Port A write enable
       //reading port:
-      .addrb(display_letter_count),   // Port B address bus,
+      .addrb(display_letter_count),   // Port B address bus, right now subtracting 2 because of the rotor settings using that button
       .doutb(display_letter_out),    // Port B RAM output data,
       .clkb(clk_pixel),
       .douta(),   // never read from this side
@@ -345,6 +346,25 @@ module top_level
     end
     
   end
+
+  // for debugging:
+  // 7-segment display-related concepts:
+  logic [31:0] val_to_display; //either the spi data or the btn_count data (default)
+  logic [6:0] ss_c; //used to grab output cathode signal for 7s leds
+ 
+  seven_segment_controller mssc(.clk_in(clk_100_passthrough),
+                                .rst_in(sys_rst),
+                                .val_in(val_to_display),
+                                .cat_out(ss_c),
+                                .an_out({ss0_an, ss1_an}));
+  assign ss0_c = ss_c; //control upper four digit's cathodes
+  assign ss1_c = ss_c; //same as above but for lower four digits
+
+    always_ff @(posedge clk_100_passthrough)begin
+    val_to_display <= sys_rst?0: letter_buffer_valid_pipe[1] ?
+      {27'b0, letter_buffer_out} : val_to_display;
+    end
+  
 
 
 
