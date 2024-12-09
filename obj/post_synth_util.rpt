@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Thu Dec  5 16:00:41 2024
-| Host         : eecs-digital-03 running 64-bit Ubuntu 24.04 LTS
+| Date         : Mon Dec  9 13:18:37 2024
+| Host         : eecs-digital-42 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_utilization -file obj/post_synth_util.rpt -hierarchical -hierarchical_depth 4
 | Design       : top_level
 | Device       : xc7s50csga324-1
@@ -22,21 +22,20 @@ Table of Contents
 +-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
 |        Instance       |                       Module                      | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
 +-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
-| top_level             |                                             (top) |       4587 |       4553 |       0 |   34 | 1370 |     16 |      3 |          3 |
-|   (top_level)         |                                             (top) |          9 |          9 |       0 |    0 |   32 |      0 |      0 |          0 |
+| top_level             |                                             (top) |       4566 |       4532 |       0 |   34 | 1355 |     16 |      2 |          3 |
+|   (top_level)         |                                             (top) |          0 |          0 |       0 |    0 |   17 |      0 |      0 |          0 |
 |   blue_ser            |                                   tmds_serializer |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
 |   btn2_db             |                                         debouncer |         26 |         26 |       0 |    0 |   21 |      0 |      0 |          0 |
-|   display_text        |                                      text_display |        412 |        379 |       0 |   33 |  192 |     16 |      2 |          3 |
-|     (display_text)    |                                      text_display |        120 |         88 |       0 |   32 |  157 |      0 |      0 |          2 |
+|   display_text        |                                      text_display |        410 |        377 |       0 |   33 |  192 |     16 |      2 |          3 |
+|     (display_text)    |                                      text_display |        118 |         86 |       0 |   32 |  157 |      0 |      0 |          2 |
 |     letter_sprite     |                                      image_sprite |        228 |        227 |       0 |    1 |    1 |     16 |      1 |          1 |
 |       (letter_sprite) |                                      image_sprite |        104 |        103 |       0 |    1 |    1 |      0 |      0 |          1 |
 |       brom1           |                 xilinx_single_port_ram_read_first |          0 |          0 |       0 |    0 |    0 |     16 |      0 |          0 |
 |       brrom2          | xilinx_single_port_ram_read_first__parameterized0 |        124 |        124 |       0 |    0 |    0 |      0 |      1 |          0 |
-|     text_bram         |    xilinx_true_dual_port_read_first_2_clock_ram_4 |         12 |         12 |       0 |    0 |    0 |      0 |      1 |          0 |
+|     text_bram         |      xilinx_true_dual_port_read_first_2_clock_ram |         12 |         12 |       0 |    0 |    0 |      0 |      1 |          0 |
 |     vsg               |                                     video_sig_gen |         52 |         52 |       0 |    0 |   34 |      0 |      0 |          0 |
-|   enigma_decoder      |                                            enigma |       3046 |       3045 |       0 |    1 |  922 |      0 |      0 |          0 |
+|   enigma_decoder      |                                            enigma |       3047 |       3046 |       0 |    1 |  922 |      0 |      0 |          0 |
 |   green_ser           |                                 tmds_serializer_0 |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
-|   letter_buffer_ram   |      xilinx_true_dual_port_read_first_2_clock_ram |         11 |         11 |       0 |    0 |    0 |      0 |      1 |          0 |
 |   mid                 |                                        ir_decoder |         55 |         55 |       0 |    0 |   56 |      0 |      0 |          0 |
 |     (mid)             |                                        ir_decoder |         18 |         18 |       0 |    0 |   23 |      0 |      0 |          0 |
 |     mcc               |                                   current_counter |         37 |         37 |       0 |    0 |   33 |      0 |      0 |          0 |
