@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module top_level
+module top_level_transmitter
   (
    input wire          clk_100mhz,
    output logic [15:0] led,
@@ -60,6 +60,13 @@ module top_level
                     .rst_in(btn[0]),
                     .dirty_in(btn[1]),
                     .clean_out(debounced_output));
+
+  logic debounced_output_clk100;
+  debouncer btn1_db_clk100(.clk_in(clk_100_passthrough),
+                    .rst_in(btn[0]),
+                    .dirty_in(btn[1]),
+                    .clean_out(debounced_output_clk100));
+
   logic debounced_output2;
   debouncer btn2_db(.clk_in(clk_pixel),
                     .rst_in(btn[0]),
@@ -71,6 +78,12 @@ module top_level
                     .dirty_in(btn[3]),
                     .clean_out(debounced_output3));
 
+  logic debounced_output3_clk100;
+  debouncer btn3_db_clk100(.clk_in(clk_100_passthrough),
+                    .rst_in(btn[0]),
+                    .dirty_in(btn[3]),
+                    .clean_out(debounced_output3_clk100));
+
   logic prev_output;
   logic prev_output2;
   logic prev_output3;
@@ -80,9 +93,7 @@ module top_level
     prev_output <= debounced_output;
     prev_output2 <= debounced_output2;
     prev_output3 <= debounced_output3;
-    // if(!prev_output3 && debounced_output3) begin
-    //   display_choice <= !display_choice;
-    // end
+
   end
   // always_ff @(posedge clk_pixel) begin
   //   prev_output2 <= debounced_output2;
@@ -95,27 +106,13 @@ module top_level
   logic           hsync1,vsync1,active_draw1;
   logic           hsync2,vsync2,active_draw2;
   logic           hsync,vsync,active_draw;
-
-  // text_display display_text
-  //   (.clk_in(clk_100_passthrough),
-  //    .clk_pixel(clk_pixel),
-  //    .sys_rst_pixel(btn[0]),
-  //    .data_valid_in(enigma_data_valid_decoded),
-  //    .data_in(enigma_data_out_decoded),
-  //    .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
-  //    .red_out(red1),
-  //    .green_out(green1),
-  //    .blue_out(blue1),
-  //    .hsync_hdmi_out(hsync1),
-  //    .vsync_hdmi_out(vsync1),
-  //    .active_draw_hdmi_out(active_draw1)
-  //   );
+  logic [4:0] original_letter;
     
   enigma_display display_enigma
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .orig_letter_in(sw[4:0]),
+     .orig_letter_in(original_letter),
      .code_letter_in(display_letter_out),
      .red_out(red2),
      .green_out(green2),
@@ -205,8 +202,8 @@ module top_level
   data_module my_data (
     .clk_in(clk_100_passthrough),
     .rst_in(btn[0]),
-    .letter_valid_in(btn[1]),
-    .rotor_valid_in(btn[3]),
+    .letter_valid_in(debounced_output_clk100),
+    .rotor_valid_in(debounced_output3_clk100),
     .sw(sw),
     .rotor_valid_out(rotor_valid_out),
     .letter_valid_out(letter_valid_out),
@@ -232,6 +229,7 @@ module top_level
               .data_valid_out(enigma_data_valid),
               .data_out(enigma_data_out)
               );
+
 
 
   // IR Transmission from Enigma coded letters
@@ -312,12 +310,15 @@ module top_level
   always_ff @(posedge clk_pixel) begin
     if(sys_rst) begin
       display_letter_count <= 0;
+      original_letter <= 0;
     end
     else begin
       // increment if the button is pressed
       if (debounced_output && ! prev_output) begin
         display_letter_count <= display_letter_count == 1023 ? 0 : display_letter_count + 1;
+        original_letter <= sw[4:0];
       end
+      
     end
   end
 
