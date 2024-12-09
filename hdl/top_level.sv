@@ -95,7 +95,10 @@ module top_level
   logic           hsync2,vsync2,active_draw2;
   logic           hsync,vsync,active_draw;
 
-  
+  // Enigma Initialization
+  logic enigma_data_valid;
+  logic [4:0] enigma_data_out;
+  logic enigma_ready;
   logic last_enigma_data_valid;
   always_ff @(posedge clk_100_passthrough) begin
     last_enigma_data_valid <= enigma_data_valid;
@@ -208,10 +211,6 @@ module top_level
     .char_out());
 
 
-  // Enigma Initialization
-  logic enigma_data_valid;
-  logic [4:0] enigma_data_out;
-  logic enigma_ready;
 
   enigma enigma_decoder(.clk_in(clk_100_passthrough),
               .rst_in(btn[0]), 
@@ -274,9 +273,11 @@ module top_level
   assign ss1_c = ss_c; //same as above but for lower four digits
 
   logic [4:0] enigma_data_hold;
+  logic [4:0] ir_data_hold;
   always_ff @(posedge clk_100_passthrough)begin
     enigma_data_hold <= enigma_data_valid ? enigma_data_out : enigma_data_hold;
-    val_to_display <= sys_rst ? 0 : (ir_valid_out ? {11'b0, enigma_data_hold, 11'b0, ir_letter_out} : val_to_display);
+    ir_data_hold <= ir_valid_out ? ir_letter_out : ir_data_hold;
+    val_to_display <= sys_rst ? 0 : {11'b0, enigma_data_hold, 11'b0, ir_data_hold};
   end
   
 

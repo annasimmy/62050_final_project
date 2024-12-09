@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version     : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date             : Mon Dec  9 13:19:18 2024
-| Host             : eecs-digital-42 running 64-bit Ubuntu 24.04.1 LTS
+| Date             : Mon Dec  9 13:52:14 2024
+| Host             : eecs-digital-30 running 64-bit Ubuntu 24.04.1 LTS
 | Command          : report_power -file obj/post_route_power.rpt
 | Design           : top_level
 | Device           : xc7s50csga324-1
@@ -30,7 +30,7 @@ Table of Contents
 ----------
 
 +--------------------------+--------------+
-| Total On-Chip Power (W)  | 0.461        |
+| Total On-Chip Power (W)  | 0.460        |
 | Design Power Budget (W)  | Unspecified* |
 | Power Budget Margin (W)  | NA           |
 | Dynamic (W)              | 0.387        |
@@ -53,21 +53,21 @@ Table of Contents
 | On-Chip                 | Power (W) | Used     | Available | Utilization (%) |
 +-------------------------+-----------+----------+-----------+-----------------+
 | Clocks                  |     0.010 |        8 |       --- |             --- |
-| Slice Logic             |     0.007 |     7323 |       --- |             --- |
-|   LUT as Logic          |     0.006 |     4513 |     32600 |           13.84 |
+| Slice Logic             |     0.007 |     7326 |       --- |             --- |
+|   LUT as Logic          |     0.006 |     4509 |     32600 |           13.83 |
 |   CARRY4                |    <0.001 |       65 |      8150 |            0.80 |
+|   Register              |    <0.001 |     1360 |     65200 |            2.09 |
 |   F7/F8 Muxes           |    <0.001 |      207 |     32600 |            0.63 |
-|   Register              |    <0.001 |     1355 |     65200 |            2.08 |
 |   LUT as Shift Register |    <0.001 |       31 |      9600 |            0.32 |
-|   Others                |     0.000 |       45 |       --- |             --- |
-| Signals                 |     0.008 |     5846 |       --- |             --- |
+|   Others                |     0.000 |       44 |       --- |             --- |
+| Signals                 |     0.008 |     5844 |       --- |             --- |
 | Block RAM               |     0.021 |       17 |        75 |           22.67 |
 | MMCM                    |     0.105 |        1 |         5 |           20.00 |
 | PLL                     |     0.101 |        1 |         5 |           20.00 |
 | DSPs                    |     0.001 |        3 |       120 |            2.50 |
 | I/O                     |     0.134 |       77 |       210 |           36.67 |
 | Static Power            |     0.073 |          |           |                 |
-| Total                   |     0.461 |          |           |                 |
+| Total                   |     0.460 |          |           |                 |
 +-------------------------+-----------+----------+-----------+-----------------+
 
 
@@ -156,7 +156,7 @@ Table of Contents
 |       brrom2      |     0.003 |
 |     text_bram     |     0.002 |
 |   enigma_decoder  |     0.012 |
-|   my_data         |     0.003 |
+|   my_data         |     0.002 |
 |   wizard_hdmi     |     0.105 |
 |   wizard_migcam   |     0.101 |
 +-------------------+-----------+
