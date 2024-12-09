@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Thu Dec  5 16:00:51 2024
-| Host         : eecs-digital-03 running 64-bit Ubuntu 24.04 LTS
+| Date         : Mon Dec  9 13:52:04 2024
+| Host         : eecs-digital-30 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_timing -file obj/post_place_timing.rpt
 | Design       : top_level
 | Device       : 7s50-csga324
@@ -12,19 +12,19 @@ Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanc
 
 Timing Report
 
-Slack (MET) :             3.127ns  (required time - arrival time)
+Slack (MET) :             2.778ns  (required time - arrival time)
   Source:                 display_text/letter_letter2_reg[1]/C
                             (rising edge-triggered cell FDRE clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
-  Destination:            display_text/letter_sprite/image_addr_reg/A[15]
+  Destination:            display_text/letter_sprite/image_addr_reg/A[13]
                             (rising edge-triggered cell DSP48E1 clocked by clk_pixel_cw_hdmi  {rise@0.000ns fall@6.734ns period=13.468ns})
   Path Group:             clk_pixel_cw_hdmi
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            13.468ns  (clk_pixel_cw_hdmi rise@13.468ns - clk_pixel_cw_hdmi rise@0.000ns)
-  Data Path Delay:        6.284ns  (logic 3.697ns (58.832%)  route 2.587ns (41.168%))
-  Logic Levels:           9  (CARRY4=6 LUT2=1 LUT5=2)
-  Clock Path Skew:        0.057ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    -2.031ns = ( 11.437 - 13.468 ) 
-    Source Clock Delay      (SCD):    -2.524ns
+  Data Path Delay:        6.642ns  (logic 3.585ns (53.975%)  route 3.057ns (46.025%))
+  Logic Levels:           9  (CARRY4=6 LUT2=1 LUT5=1 LUT6=1)
+  Clock Path Skew:        0.063ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -2.026ns = ( 11.442 - 13.468 ) 
+    Source Clock Delay      (SCD):    -2.525ns
     Clock Pessimism Removal (CPR):    -0.436ns
   Clock Uncertainty:      0.210ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -43,41 +43,41 @@ Slack (MET) :             3.127ns  (required time - arrival time)
                                                      -8.525    -5.832 r  wizard_migcam/plle2_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.660    -4.172    wizard_migcam/clk_100_cw_fast
     BUFGCTRL_X0Y2        BUFG (Prop_bufg_I_O)         0.096    -4.076 r  wizard_migcam/clkout1_buf/O
-                         net (fo=1149, estimated)     1.634    -2.442    wizard_hdmi/clk_100
+                         net (fo=1134, estimated)     1.634    -2.442    wizard_hdmi/clk_100
     MMCME2_ADV_X1Y0      MMCME2_ADV (Prop_mmcme2_adv_CLKIN1_CLKOUT0)
                                                      -3.393    -5.835 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.661    -4.174    wizard_hdmi/clk_pixel_cw_hdmi
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096    -4.078 r  wizard_hdmi/clkout1_buf/O
-                         net (fo=291, estimated)      1.554    -2.524    display_text/clk_pixel
-    SLICE_X8Y22          FDRE                                         r  display_text/letter_letter2_reg[1]/C
+                         net (fo=291, estimated)      1.553    -2.525    display_text/clk_pixel
+    SLICE_X8Y23          FDRE                                         r  display_text/letter_letter2_reg[1]/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X8Y22          FDRE (Prop_fdre_C_Q)         0.518    -2.006 r  display_text/letter_letter2_reg[1]/Q
-                         net (fo=24, estimated)       1.017    -0.989    display_text/letter_sprite/Q[1]
-    SLICE_X11Y21         LUT5 (Prop_lut5_I0_O)        0.124    -0.865 r  display_text/letter_sprite/image_addr3__0_carry_i_6/O
-                         net (fo=1, routed)           0.000    -0.865    display_text/letter_sprite/image_addr3__0_carry_i_6_n_0
-    SLICE_X11Y21         CARRY4 (Prop_carry4_S[1]_CO[3])
-                                                      0.550    -0.315 r  display_text/letter_sprite/image_addr3__0_carry/CO[3]
-                         net (fo=1, estimated)        0.000    -0.315    display_text/letter_sprite/image_addr3__0_carry_n_0
-    SLICE_X11Y22         CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.334     0.019 r  display_text/letter_sprite/image_addr3__0_carry__0/O[1]
-                         net (fo=1, estimated)        0.511     0.530    display_text/letter_sprite/image_addr3__0_carry__0_n_6
-    SLICE_X8Y22          LUT2 (Prop_lut2_I1_O)        0.303     0.833 r  display_text/letter_sprite/i___8_carry__0_i_6/O
-                         net (fo=1, routed)           0.000     0.833    display_text/letter_sprite/i___8_carry__0_i_6_n_0
-    SLICE_X8Y22          CARRY4 (Prop_carry4_S[3]_CO[3])
-                                                      0.376     1.209 r  display_text/letter_sprite/i___8_carry__0_i_1/CO[3]
-                         net (fo=1, estimated)        0.000     1.209    display_text/letter_sprite/i___8_carry__0_i_1_n_0
-    SLICE_X8Y23          CARRY4 (Prop_carry4_CI_O[1])
-                                                      0.323     1.532 r  display_text/letter_sprite/i___8_carry__1_i_1/O[1]
-                         net (fo=2, estimated)        0.472     2.004    display_text/letter_sprite/PCOUT[9]
-    SLICE_X9Y22          LUT5 (Prop_lut5_I4_O)        0.306     2.310 r  display_text/letter_sprite/i___8_carry__1_i_4/O
-                         net (fo=1, routed)           0.000     2.310    display_text/letter_sprite/i___8_carry__1_i_4_n_0
-    SLICE_X9Y22          CARRY4 (Prop_carry4_S[1]_CO[3])
-                                                      0.550     2.860 r  display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__1/CO[3]
-                         net (fo=1, estimated)        0.000     2.860    display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__1_n_0
-    SLICE_X9Y23          CARRY4 (Prop_carry4_CI_O[3])
-                                                      0.313     3.173 r  display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__2/O[3]
-                         net (fo=1, estimated)        0.587     3.760    display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__2_n_4
-    DSP48_X0Y8           DSP48E1                                      r  display_text/letter_sprite/image_addr_reg/A[15]
+    SLICE_X8Y23          FDRE (Prop_fdre_C_Q)         0.518    -2.007 r  display_text/letter_letter2_reg[1]/Q
+                         net (fo=24, estimated)       1.414    -0.593    display_text/letter_sprite/Q[1]
+    SLICE_X9Y17          LUT5 (Prop_lut5_I0_O)        0.124    -0.469 r  display_text/letter_sprite/image_addr3__0_carry_i_6/O
+                         net (fo=1, routed)           0.000    -0.469    display_text/letter_sprite/image_addr3__0_carry_i_6_n_0
+    SLICE_X9Y17          CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     0.081 r  display_text/letter_sprite/image_addr3__0_carry/CO[3]
+                         net (fo=1, estimated)        0.000     0.081    display_text/letter_sprite/image_addr3__0_carry_n_0
+    SLICE_X9Y18          CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     0.415 r  display_text/letter_sprite/image_addr3__0_carry__0/O[1]
+                         net (fo=1, estimated)        0.605     1.020    display_text/letter_sprite/image_addr3__0_carry__0_n_6
+    SLICE_X10Y16         LUT2 (Prop_lut2_I1_O)        0.303     1.323 r  display_text/letter_sprite/i___8_carry__0_i_6/O
+                         net (fo=1, routed)           0.000     1.323    display_text/letter_sprite/i___8_carry__0_i_6_n_0
+    SLICE_X10Y16         CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.376     1.699 r  display_text/letter_sprite/i___8_carry__0_i_1/CO[3]
+                         net (fo=1, estimated)        0.000     1.699    display_text/letter_sprite/i___8_carry__0_i_1_n_0
+    SLICE_X10Y17         CARRY4 (Prop_carry4_CI_O[0])
+                                                      0.219     1.918 r  display_text/letter_sprite/i___8_carry__1_i_1/O[0]
+                         net (fo=2, estimated)        0.499     2.417    display_text/letter_sprite/PCOUT[8]
+    SLICE_X11Y17         LUT6 (Prop_lut6_I5_O)        0.295     2.712 r  display_text/letter_sprite/i___8_carry__1_i_5/O
+                         net (fo=1, routed)           0.000     2.712    display_text/letter_sprite/i___8_carry__1_i_5_n_0
+    SLICE_X11Y17         CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.532     3.244 r  display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__1/CO[3]
+                         net (fo=1, estimated)        0.000     3.244    display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__1_n_0
+    SLICE_X11Y18         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     3.578 r  display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__2/O[1]
+                         net (fo=1, estimated)        0.539     4.117    display_text/letter_sprite/image_addr2_inferred__0/i___8_carry__2_n_6
+    DSP48_X0Y6           DSP48E1                                      r  display_text/letter_sprite/image_addr_reg/A[13]
   -------------------------------------------------------------------    -------------------
 
                          (clock clk_pixel_cw_hdmi rise edge)
@@ -90,22 +90,22 @@ Slack (MET) :             3.127ns  (required time - arrival time)
                                                      -7.790     8.239 r  wizard_migcam/plle2_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.577     9.816    wizard_migcam/clk_100_cw_fast
     BUFGCTRL_X0Y2        BUFG (Prop_bufg_I_O)         0.091     9.907 r  wizard_migcam/clkout1_buf/O
-                         net (fo=1149, estimated)     1.517    11.424    wizard_hdmi/clk_100
+                         net (fo=1134, estimated)     1.517    11.424    wizard_hdmi/clk_100
     MMCME2_ADV_X1Y0      MMCME2_ADV (Prop_mmcme2_adv_CLKIN1_CLKOUT0)
                                                      -3.187     8.237 r  wizard_hdmi/mmcm_adv_inst/CLKOUT0
                          net (fo=1, estimated)        1.578     9.815    wizard_hdmi/clk_pixel_cw_hdmi
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091     9.906 r  wizard_hdmi/clkout1_buf/O
-                         net (fo=291, estimated)      1.532    11.437    display_text/letter_sprite/clk_pixel
-    DSP48_X0Y8           DSP48E1                                      r  display_text/letter_sprite/image_addr_reg/CLK
-                         clock pessimism             -0.436    11.001    
-                         clock uncertainty           -0.210    10.791    
-    DSP48_X0Y8           DSP48E1 (Setup_dsp48e1_CLK_A[15])
-                                                     -3.904     6.887    display_text/letter_sprite/image_addr_reg
+                         net (fo=291, estimated)      1.537    11.442    display_text/letter_sprite/clk_pixel
+    DSP48_X0Y6           DSP48E1                                      r  display_text/letter_sprite/image_addr_reg/CLK
+                         clock pessimism             -0.436    11.006    
+                         clock uncertainty           -0.210    10.796    
+    DSP48_X0Y6           DSP48E1 (Setup_dsp48e1_CLK_A[13])
+                                                     -3.901     6.895    display_text/letter_sprite/image_addr_reg
   -------------------------------------------------------------------
-                         required time                          6.887    
-                         arrival time                          -3.760    
+                         required time                          6.895    
+                         arrival time                          -4.117    
   -------------------------------------------------------------------
-                         slack                                  3.127    
+                         slack                                  2.778    
 
 
 

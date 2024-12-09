@@ -25,6 +25,13 @@ module text_display (
         if(sys_rst_pixel) begin
             counter <= 0;
             reset_state <= 1;
+        end else if(data_valid_in) begin
+            hold_data_in <= data_in;
+            if(counter == 1024) begin
+                counter <= 1;
+            end else begin
+                counter <= counter + 1;
+            end
         end else if(reset_state != 0) begin
             if(reset_state == 1024) begin
                 reset_state <= 0;
@@ -33,15 +40,6 @@ module text_display (
             end
             hold_data_in <= 0;
             counter <= reset_state;
-        end begin
-            if(data_valid_in) begin
-                hold_data_in <= data_in;
-                if(counter == 1024) begin
-                    counter <= 0;
-                end else begin
-                    counter <= counter + 1;
-                end
-            end
         end
     end
     

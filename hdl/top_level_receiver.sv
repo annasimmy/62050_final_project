@@ -8,7 +8,7 @@ module top_level_receiver
    input wire [15:0]   sw,
    input wire [3:0]    btn,
    output logic [2:0]  rgb0,
-   output logic [2:0]  rgb1,
+   output logic [2:0]  rgb1,  
    input wire [3:0] pmodb_i,
    output logic [3:0] pmodb_o, //output I/O used for IR input
    // seven segment
@@ -99,8 +99,8 @@ module top_level_receiver
     (.clk_in(clk_100_passthrough),
      .clk_pixel(clk_pixel),
      .sys_rst_pixel(btn[0]),
-     .data_valid_in(letter_buffer_valid_pipe[1]),
-     .data_in(letter_buffer_out),
+     .data_valid_in(!last_enigma_data_valid && enigma_data_valid),
+     .data_in(enigma_data_out),
      .scroll_dir_in((debounced_output2 && !prev_output2) ? sw[6:5] : 0),
      .red_out(red1),
      .green_out(green1),
@@ -227,49 +227,52 @@ module top_level_receiver
   logic letter_buffer_valid;
   logic [1:0] letter_buffer_valid_pipe;
 
-  xilinx_true_dual_port_read_first_2_clock_ram #(
-      .RAM_WIDTH(5),
-      .RAM_DEPTH(1024),
-      .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_ram (
-      .clka(clk_100_passthrough),     // Clock 
-      //writing port:
-      .addra(enigma_letter_count),   // Port A address bus,
-      .dina(enigma_data_out),     // Port A RAM input data
-      .wea(enigma_data_valid),       // Port A write enable
-      //reading port:
-      .addrb(enigma_letter_count - 1),   // Port B address bus,
-      .doutb(letter_buffer_out),    // Port B RAM output data,
-      .douta(),   // never read from this side
-      .clkb(clk_100_passthrough),
-      .dinb(),     // never write to this side
-      .web(1'b0),       // Port B write enable
-      .ena(1'b1),       // Port A RAM Enable
-      .enb(1'b1),       // Port B RAM Enable,
-      .rsta(1'b0),     // Port A output reset 
-      .rstb(1'b0),     // Port B output reset
-      .regcea(1'b1),   // Port A output register enable
-      .regceb(1'b1)    // Port B output register enable
-      );
+  // xilinx_true_dual_port_read_first_2_clock_ram #(
+  //     .RAM_WIDTH(5),
+  //     .RAM_DEPTH(1024),
+  //     .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_ram (
+  //     .clka(clk_100_passthrough),     // Clock 
+  //     //writing port:
+  //     .addra(enigma_letter_count),   // Port A address bus,
+  //     .dina(enigma_data_out),     // Port A RAM input data
+  //     .wea(enigma_data_valid),       // Port A write enable
+  //     //reading port:
+  //     .addrb(enigma_letter_count - 1),   // Port B address bus,
+  //     .doutb(letter_buffer_out),    // Port B RAM output data,
+  //     .douta(),   // never read from this side
+  //     .clkb(clk_100_passthrough),
+  //     .dinb(),     // never write to this side
+  //     .web(1'b0),       // Port B write enable
+  //     .ena(1'b1),       // Port A RAM Enable
+  //     .enb(1'b1),       // Port B RAM Enable,
+  //     .rsta(1'b0),     // Port A output reset 
+  //     .rstb(1'b0),     // Port B output reset
+  //     .regcea(1'b1),   // Port A output register enable
+  //     .regceb(1'b1)    // Port B output register enable
+  //     );
 
-  logic enigma_valid_pipe;
-  logic enigma_valid_pipe2;
-  logic enigma_valid_pipe3;
+  // logic enigma_valid_pipe;
+  // logic enigma_valid_pipe2;
+  // logic enigma_valid_pipe3;
+  // logic enigma_valid_pipe4;
 
   always_ff @(posedge clk_100_passthrough) begin
     last_enigma_data_valid <= enigma_data_valid;
-    letter_buffer_valid_pipe <= {letter_buffer_valid_pipe[0], letter_buffer_valid};
-    enigma_valid_pipe <= enigma_data_valid && ! last_enigma_data_valid;
-    enigma_valid_pipe3 <= enigma_valid_pipe;
-    if(sys_rst) begin
-      enigma_letter_count <= 0;
-    end else begin
-      if (enigma_valid_pipe3) begin
-        enigma_letter_count <= enigma_letter_count == 1023 ? 0 : enigma_letter_count + 1;
-        letter_buffer_valid <= 1; // want high for one cycle
-      end else begin
-        letter_buffer_valid <= 0; 
-      end
-    end
+    // letter_buffer_valid_pipe <= {letter_buffer_valid_pipe[0], letter_buffer_valid};
+    // enigma_valid_pipe <= enigma_data_valid && ! last_enigma_data_valid;
+    // enigma_valid_pipe4 <= enigma_valid_pipe3;
+    // enigma_valid_pipe3 <= enigma_valid_pipe2;
+    // enigma_valid_pipe2 <= enigma_valid_pipe;
+    // if(sys_rst) begin
+    //   enigma_letter_count <= 0;
+    // end else begin
+    //   if (enigma_valid_pipe4) begin
+    //     enigma_letter_count <= enigma_letter_count == 1023 ? 0 : enigma_letter_count + 1;
+    //     // letter_buffer_valid <= 1; // want high for one cycle
+    //   end else begin
+    //     // letter_buffer_valid <= 0; 
+    //   end
+    // end
   end
 
 
