@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-module top_level_transmitter
+module top_level
   (
    input wire          clk_100mhz,
    output logic [15:0] led,
@@ -294,7 +294,7 @@ module top_level_transmitter
       .dina(enigma_data_out),     // Port A RAM input data
       .wea(enigma_data_valid),       // Port A write enable
       //reading port:
-      .addrb(display_letter_count),   // Port B address bus, right now subtracting 2 because of the rotor settings using that button
+      .addrb(display_letter_count-1),   // Port B address bus
       .doutb(display_letter_out),    // Port B RAM output data,
       .clkb(clk_pixel),
       .douta(),   // never read from this side
@@ -316,7 +316,7 @@ module top_level_transmitter
     else begin
       // increment if the button is pressed
       if (debounced_output && ! prev_output) begin
-        display_letter_count <= display_letter_count == 999 ? 0 : display_letter_count + 1;
+        display_letter_count <= display_letter_count == 1023 ? 0 : display_letter_count + 1;
       end
     end
   end
@@ -333,12 +333,12 @@ module top_level_transmitter
     else begin
       // if one letter has been transmitted, move on to read the next letter
       if (!ir_busy_out && last_ir_busy_out) begin
-        ir_letter_count <= ir_letter_count == 999 ? 0 : ir_letter_count + 1;
+        ir_letter_count <= ir_letter_count == 1023 ? 0 : ir_letter_count + 1;
       end
       // update to write in the next letter address every time a letter is output from the enigma module
       if (enigma_data_valid && ! last_enigma_data_valid) begin
         letter_buffer_valid <= 1; // only want letter buffer valid once for the ir transmitter
-        enigma_letter_count <= enigma_letter_count == 999 ? 0 : enigma_letter_count + 1;
+        enigma_letter_count <= enigma_letter_count == 1023 ? 0 : enigma_letter_count + 1;
       end
       else if(!ir_busy_out) begin // otherwise hold it until IR not busy
         letter_buffer_valid <= 0;
