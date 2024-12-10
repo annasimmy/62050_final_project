@@ -87,7 +87,6 @@ module top_level_transmitter
   logic prev_output;
   logic prev_output2;
   logic prev_output3;
-  // logic display_choice;
 
   always_ff @(posedge clk_pixel) begin
     prev_output <= debounced_output;

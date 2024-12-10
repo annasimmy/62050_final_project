@@ -1,8 +1,8 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date         : Mon Dec  9 23:01:06 2024
-| Host         : eecs-digital-43 running 64-bit Ubuntu 24.04.1 LTS
+| Date         : Tue Dec 10 00:01:19 2024
+| Host         : eecs-digital-15 running 64-bit Ubuntu 24.04.1 LTS
 | Command      : report_utilization -file obj/post_synth_util.rpt -hierarchical -hierarchical_depth 4
 | Design       : top_level
 | Device       : xc7s50csga324-1
@@ -19,35 +19,50 @@ Table of Contents
 1. Utilization by Hierarchy
 ---------------------------
 
-+-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
-|        Instance       |                       Module                      | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
-+-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
-| top_level             |                                             (top) |       4564 |       4530 |       0 |   34 | 1360 |     16 |      2 |          3 |
-|   (top_level)         |                                             (top) |          0 |          0 |       0 |    0 |   22 |      0 |      0 |          0 |
-|   blue_ser            |                                   tmds_serializer |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
-|   btn2_db             |                                         debouncer |         26 |         26 |       0 |    0 |   21 |      0 |      0 |          0 |
-|   display_text        |                                      text_display |        409 |        376 |       0 |   33 |  192 |     16 |      2 |          3 |
-|     (display_text)    |                                      text_display |        117 |         85 |       0 |   32 |  157 |      0 |      0 |          2 |
-|     letter_sprite     |                                      image_sprite |        228 |        227 |       0 |    1 |    1 |     16 |      1 |          1 |
-|       (letter_sprite) |                                      image_sprite |        104 |        103 |       0 |    1 |    1 |      0 |      0 |          1 |
-|       brom1           |                 xilinx_single_port_ram_read_first |          0 |          0 |       0 |    0 |    0 |     16 |      0 |          0 |
-|       brrom2          | xilinx_single_port_ram_read_first__parameterized0 |        124 |        124 |       0 |    0 |    0 |      0 |      1 |          0 |
-|     text_bram         |      xilinx_true_dual_port_read_first_2_clock_ram |         12 |         12 |       0 |    0 |    0 |      0 |      1 |          0 |
-|     vsg               |                                     video_sig_gen |         52 |         52 |       0 |    0 |   34 |      0 |      0 |          0 |
-|   enigma_decoder      |                                            enigma |       3047 |       3046 |       0 |    1 |  922 |      0 |      0 |          0 |
-|   green_ser           |                                 tmds_serializer_0 |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
-|   mid                 |                                        ir_decoder |         55 |         55 |       0 |    0 |   56 |      0 |      0 |          0 |
-|     (mid)             |                                        ir_decoder |         18 |         18 |       0 |    0 |   23 |      0 |      0 |          0 |
-|     mcc               |                                   current_counter |         37 |         37 |       0 |    0 |   33 |      0 |      0 |          0 |
-|   mssc                |                          seven_segment_controller |         28 |         28 |       0 |    0 |   25 |      0 |      0 |          0 |
-|   my_data             |                                       data_module |        984 |        984 |       0 |    0 |   77 |      0 |      0 |          0 |
-|   red_ser             |                                 tmds_serializer_1 |          1 |          1 |       0 |    0 |    1 |      0 |      0 |          0 |
-|   s1                  |                                      synchronizer |          2 |          2 |       0 |    0 |    2 |      0 |      0 |          0 |
-|   tmds_blue           |                                      tmds_encoder |          4 |          4 |       0 |    0 |   14 |      0 |      0 |          0 |
-|   tmds_green          |                                    tmds_encoder_2 |          4 |          4 |       0 |    0 |   14 |      0 |      0 |          0 |
-|   tmds_red            |                                    tmds_encoder_3 |          4 |          4 |       0 |    0 |   14 |      0 |      0 |          0 |
-|   wizard_hdmi         |                                   cw_hdmi_clk_wiz |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
-|   wizard_migcam       |                                   cw_fast_clk_wiz |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
-+-----------------------+---------------------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
++-----------------------------+----------------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+|           Instance          |                    Module                    | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | DSP Blocks |
++-----------------------------+----------------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+| top_level                   |                                        (top) |      60046 |      60014 |       0 |   32 | 29152 |      0 |      1 |          0 |
+|   (top_level)               |                                        (top) |          0 |          0 |       0 |    0 |    37 |      0 |      0 |          0 |
+|   btn2_db                   |                                    debouncer |         27 |         27 |       0 |    0 |    21 |      0 |      0 |          0 |
+|   gragas_machine            |                                 bombe_module |      59992 |      59960 |       0 |   32 | 29069 |      0 |      1 |          0 |
+|     (gragas_machine)        |                                 bombe_module |        347 |        347 |       0 |    0 |   944 |      0 |      0 |          0 |
+|     genblk1[0].curr_enigma  |                                       enigma |       1631 |       1630 |       0 |    1 |   874 |      0 |      0 |          0 |
+|     genblk1[10].curr_enigma |                                     enigma_0 |       1783 |       1782 |       0 |    1 |   873 |      0 |      0 |          0 |
+|     genblk1[11].curr_enigma |                                     enigma_1 |       1965 |       1964 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[12].curr_enigma |                                     enigma_2 |       1674 |       1673 |       0 |    1 |   874 |      0 |      0 |          0 |
+|     genblk1[13].curr_enigma |                                     enigma_3 |       2018 |       2017 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[14].curr_enigma |                                     enigma_4 |       1901 |       1900 |       0 |    1 |   874 |      0 |      0 |          0 |
+|     genblk1[15].curr_enigma |                                     enigma_5 |       2004 |       2003 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[16].curr_enigma |                                     enigma_6 |       1676 |       1675 |       0 |    1 |   873 |      0 |      0 |          0 |
+|     genblk1[17].curr_enigma |                                     enigma_7 |       2007 |       2006 |       0 |    1 |   883 |      0 |      0 |          0 |
+|     genblk1[18].curr_enigma |                                     enigma_8 |       1786 |       1785 |       0 |    1 |   876 |      0 |      0 |          0 |
+|     genblk1[19].curr_enigma |                                     enigma_9 |       1970 |       1969 |       0 |    1 |   883 |      0 |      0 |          0 |
+|     genblk1[1].curr_enigma  |                                    enigma_10 |       1955 |       1954 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[20].curr_enigma |                                    enigma_11 |       1695 |       1694 |       0 |    1 |   872 |      0 |      0 |          0 |
+|     genblk1[21].curr_enigma |                                    enigma_12 |       2014 |       2013 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[22].curr_enigma |                                    enigma_13 |       1835 |       1834 |       0 |    1 |   877 |      0 |      0 |          0 |
+|     genblk1[23].curr_enigma |                                    enigma_14 |       2017 |       2016 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[24].curr_enigma |                                    enigma_15 |       1686 |       1685 |       0 |    1 |   873 |      0 |      0 |          0 |
+|     genblk1[25].curr_enigma |                                    enigma_16 |       2012 |       2011 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[26].curr_enigma |                                    enigma_17 |       1793 |       1792 |       0 |    1 |   876 |      0 |      0 |          0 |
+|     genblk1[27].curr_enigma |                                    enigma_18 |       1974 |       1973 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[28].curr_enigma |                                    enigma_19 |       1691 |       1690 |       0 |    1 |   872 |      0 |      0 |          0 |
+|     genblk1[29].curr_enigma |                                    enigma_20 |       2040 |       2039 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[2].curr_enigma  |                                    enigma_21 |       1736 |       1735 |       0 |    1 |   876 |      0 |      0 |          0 |
+|     genblk1[30].curr_enigma |                                    enigma_22 |       1824 |       1823 |       0 |    1 |   874 |      0 |      0 |          0 |
+|     genblk1[31].curr_enigma |                                    enigma_23 |       2006 |       2005 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[3].curr_enigma  |                                    enigma_24 |       1919 |       1918 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[4].curr_enigma  |                                    enigma_25 |       1633 |       1632 |       0 |    1 |   872 |      0 |      0 |          0 |
+|     genblk1[5].curr_enigma  |                                    enigma_26 |       1972 |       1971 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[6].curr_enigma  |                                    enigma_27 |       1795 |       1794 |       0 |    1 |   874 |      0 |      0 |          0 |
+|     genblk1[7].curr_enigma  |                                    enigma_28 |       1968 |       1967 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     genblk1[8].curr_enigma  |                                    enigma_29 |       1672 |       1671 |       0 |    1 |   873 |      0 |      0 |          0 |
+|     genblk1[9].curr_enigma  |                                    enigma_30 |       1987 |       1986 |       0 |    1 |   884 |      0 |      0 |          0 |
+|     text_bram               | xilinx_true_dual_port_read_first_2_clock_ram |          6 |          6 |       0 |    0 |     0 |      0 |      1 |          0 |
+|   mssc                      |                     seven_segment_controller |         27 |         27 |       0 |    0 |    25 |      0 |      0 |          0 |
+|   wizard_hdmi               |                              cw_hdmi_clk_wiz |          0 |          0 |       0 |    0 |     0 |      0 |      0 |          0 |
+|   wizard_migcam             |                              cw_fast_clk_wiz |          0 |          0 |       0 |    0 |     0 |      0 |      0 |          0 |
++-----------------------------+----------------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
 
 

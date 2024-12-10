@@ -70,14 +70,10 @@ module top_level_receiver
   logic prev_output;
   logic prev_output2;
   logic prev_output3;
-  logic display_choice;
 
   always_ff @(posedge clk_pixel) begin
     prev_output <= debounced_output;
     prev_output3 <= debounced_output3;
-    if(!prev_output3 && debounced_output3) begin
-      display_choice <= !display_choice;
-    end
   end
   always_ff @(posedge clk_pixel) begin
     prev_output2 <= debounced_output2;
@@ -219,13 +215,6 @@ module top_level_receiver
               .data_valid_out(enigma_data_valid),
               .data_out(enigma_data_out)
               );
-
-
-  // BRAM: from enigma decoding to text display
-  logic [10:0] enigma_letter_count; //count up to 1024 letters
-  logic [4:0] letter_buffer_out;
-  logic letter_buffer_valid;
-  logic [1:0] letter_buffer_valid_pipe;
 
 
 
