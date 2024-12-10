@@ -24,10 +24,6 @@ module top_level
 
   assign rgb0 = 0;
   assign rgb1 = 0;
-  // assign ss0_an = 0;
-  // assign ss1_an = 0;
-  // assign ss0_c = 0;
-  // assign ss1_c = 0;
   
   // Clock and Reset Signals
   logic          clk_camera;

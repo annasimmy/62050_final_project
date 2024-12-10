@@ -24,10 +24,6 @@ module top_level_receiver
 
   assign rgb0 = 0;
   assign rgb1 = 0;
-  // assign ss0_an = 0;
-  // assign ss1_an = 0;
-  // assign ss0_c = 0;
-  // assign ss1_c = 0;
   
   // Clock and Reset Signals
   logic          clk_camera;
@@ -94,6 +90,15 @@ module top_level_receiver
   logic           hsync1,vsync1,active_draw1;
   logic           hsync2,vsync2,active_draw2;
   logic           hsync,vsync,active_draw;
+
+  // Enigma Initialization
+  logic enigma_data_valid;
+  logic [4:0] enigma_data_out;
+  logic enigma_ready;
+  logic last_enigma_data_valid;
+  always_ff @(posedge clk_100_passthrough) begin
+    last_enigma_data_valid <= enigma_data_valid;
+  end
 
   text_display display_text
     (.clk_in(clk_100_passthrough),
@@ -202,11 +207,6 @@ module top_level_receiver
     .char_out());
 
 
-  // Enigma Initialization
-  logic enigma_data_valid;
-  logic last_enigma_data_valid;
-  logic [4:0] enigma_data_out;
-  logic enigma_ready;
 
   enigma enigma_decoder(.clk_in(clk_100_passthrough),
               .rst_in(btn[0]), 
@@ -226,54 +226,6 @@ module top_level_receiver
   logic [4:0] letter_buffer_out;
   logic letter_buffer_valid;
   logic [1:0] letter_buffer_valid_pipe;
-
-  // xilinx_true_dual_port_read_first_2_clock_ram #(
-  //     .RAM_WIDTH(5),
-  //     .RAM_DEPTH(1024),
-  //     .RAM_PERFORMANCE("HIGH_PERFORMANCE")) letter_buffer_ram (
-  //     .clka(clk_100_passthrough),     // Clock 
-  //     //writing port:
-  //     .addra(enigma_letter_count),   // Port A address bus,
-  //     .dina(enigma_data_out),     // Port A RAM input data
-  //     .wea(enigma_data_valid),       // Port A write enable
-  //     //reading port:
-  //     .addrb(enigma_letter_count - 1),   // Port B address bus,
-  //     .doutb(letter_buffer_out),    // Port B RAM output data,
-  //     .douta(),   // never read from this side
-  //     .clkb(clk_100_passthrough),
-  //     .dinb(),     // never write to this side
-  //     .web(1'b0),       // Port B write enable
-  //     .ena(1'b1),       // Port A RAM Enable
-  //     .enb(1'b1),       // Port B RAM Enable,
-  //     .rsta(1'b0),     // Port A output reset 
-  //     .rstb(1'b0),     // Port B output reset
-  //     .regcea(1'b1),   // Port A output register enable
-  //     .regceb(1'b1)    // Port B output register enable
-  //     );
-
-  // logic enigma_valid_pipe;
-  // logic enigma_valid_pipe2;
-  // logic enigma_valid_pipe3;
-  // logic enigma_valid_pipe4;
-
-  always_ff @(posedge clk_100_passthrough) begin
-    last_enigma_data_valid <= enigma_data_valid;
-    // letter_buffer_valid_pipe <= {letter_buffer_valid_pipe[0], letter_buffer_valid};
-    // enigma_valid_pipe <= enigma_data_valid && ! last_enigma_data_valid;
-    // enigma_valid_pipe4 <= enigma_valid_pipe3;
-    // enigma_valid_pipe3 <= enigma_valid_pipe2;
-    // enigma_valid_pipe2 <= enigma_valid_pipe;
-    // if(sys_rst) begin
-    //   enigma_letter_count <= 0;
-    // end else begin
-    //   if (enigma_valid_pipe4) begin
-    //     enigma_letter_count <= enigma_letter_count == 1023 ? 0 : enigma_letter_count + 1;
-    //     // letter_buffer_valid <= 1; // want high for one cycle
-    //   end else begin
-    //     // letter_buffer_valid <= 0; 
-    //   end
-    // end
-  end
 
 
 
@@ -317,15 +269,12 @@ module top_level_receiver
   assign ss1_c = ss_c; //same as above but for lower four digits
 
   logic [4:0] enigma_data_hold;
+  logic [4:0] ir_data_hold;
   always_ff @(posedge clk_100_passthrough)begin
     enigma_data_hold <= enigma_data_valid ? enigma_data_out : enigma_data_hold;
-    val_to_display <= sys_rst ? 0 : (ir_valid_out ? {11'b0, enigma_data_hold, 11'b0, ir_letter_out} : val_to_display);
+    ir_data_hold <= ir_valid_out ? ir_letter_out : ir_data_hold;
+    val_to_display <= sys_rst ? 0 : {11'b0, enigma_data_hold, 11'b0, ir_data_hold};
   end
-  
-
-
 
 endmodule // top_level
-
-
 `default_nettype wire
